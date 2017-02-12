@@ -146,6 +146,7 @@ class informationManager():
 								shared_nodes[node] += 1.0
 		consumption = 0
 
+		node_object = None
 		for node, counter in shared_nodes.iteritems():
 
 			node_object = self.get_node(node)
@@ -164,9 +165,10 @@ class informationManager():
 					aux = node_object.INTERFACE * host_wl
 				consumption += (node_object.CHASSIS/counter * host_wl/node_object.LINK_CAPACITY) + aux
 
-		node_object.aux_workload = node_object.aux_workload.fromkeys(node_object.aux_workload, 0)
+		if node_object:
+			node_object.aux_workload = node_object.aux_workload.fromkeys(node_object.aux_workload, 0)
 
-		return node_object.to_kw(consumption)
+		return to_kw(consumption)
 
 
 	class Host(object):
@@ -228,7 +230,6 @@ class informationManager():
 			else:
 				return 0,0
 
-		path_list = []
 		max_workload = 0
 		max_latency = 0
 		max_latency_threshold = 0
@@ -247,6 +248,7 @@ class informationManager():
 			self.macaddr = macaddr
 			self.ipaddr = ip
 			self.netw_tokens = self.powerToken()
+			self.path_list = []
 
 		def create_path (self, src, dst, p):
 			src_dpid, src_port = src.dpid, src.port
@@ -337,9 +339,6 @@ class informationManager():
 		port_workload = {}
 		aux_workload = {}
 
-		# TODO Fix this
-		# consumption = []
-
 		def __init__(self, event):
 			self.event = event
 			self.connection = event.connection
@@ -367,9 +366,6 @@ class informationManager():
 				if port == p:
 					return wl
 
-		def to_kw(self, watts):
-			return watts/1000.000
-
 		def get_consumption(self, w = None):
 			PORTS = 0
 			if not w:
@@ -393,20 +389,20 @@ class informationManager():
 						PORTS += self.INTERFACE * wl
 				consumption = self.CHASSIS + PORTS
 
-			baseline = self.to_kw(baseline_consumption(w))
-			proportional = self.to_kw(consumption)
+			baseline = to_kw(baseline_consumption(w))
+			proportional = to_kw(consumption)
 
 			# Why are you emptying this?
 			# self.port_workload = self.port_workload.fromkeys(self.port_workload,0)
 			self.consumption.append((proportional,baseline, 1200))
-			return self.to_kw(consumption),baseline, 1200
-
+			return to_kw(consumption),baseline, 1200
 
 
 	def get_node(self, dpid):
 		for node in self.nodes:
 			if node.id == dpid:
 				return node
+
 
 	def get_host(self, mac=None, ip=None, dpid=None, port=None):
 		if dpid and port:
@@ -422,3 +418,5 @@ class informationManager():
 				if h.ipaddr == ip:
 					return h
 
+def to_kw(watts):
+	return watts/1000.000

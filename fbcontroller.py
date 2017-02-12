@@ -21,18 +21,18 @@ from info_manager import *
 from update_database import *
 
 info_manager = informationManager()
-G = nx.Graph()
 
 main_gui = None
 
 class Forwarding(object):
 
-	# global info_manager, G
-
-	def __init__(self):
+	def __init__(self, G):
+		# Network Graph
+		self.G = G
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
+
 
 	def _handle_ConnectionUp (self,event):
 
@@ -44,24 +44,24 @@ class Forwarding(object):
 		if event.connection.dpid in info_manager.nodes:
 			del info_manager.nodes[event.connection.dpid]
 
-		G.remove_node(event.connection.dpid)
+		self.G.remove_node(event.connection.dpid)
 
 	def _handle_openflow_discovery_LinkEvent(self,event):
 
 		dpid1, dpid2 = event.link.dpid1, event.link.dpid2
 		port1, port2 = event.link.port1, event.link.port2
 
-		G.add_node(dpid1)
-		G.add_node(dpid2)
+		self.G.add_node(dpid1)
+		self.G.add_node(dpid2)
 
 		if event.added:
-			G.add_edge(dpid1,dpid2)
+			self.G.add_edge(dpid1,dpid2)
 			info_manager.get_node(dpid1).link[dpid1][port1] = dpid2
 			info_manager.get_node(dpid1).adjacency[dpid1][dpid2] = port1
 
 		if event.removed:
-			if G.has_edge(dpid1,dpid2):
-					G.remove_edge(dpid1,dpid2)
+			if self.G.has_edge(dpid1,dpid2):
+					self.G.remove_edge(dpid1,dpid2)
 
 	def _handle_PacketIn (self, event):
 		packet = event.parsed
@@ -101,7 +101,7 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid).path
 			except:
 				try:
-					path = get_most_efficient_path(G, src_host.dpid, dst_host.dpid)
+					path = get_most_efficient_path(self.G, src_host.dpid, dst_host.dpid)
 					src_host.create_path(src_host, dst_host, path)
 				except Exception as e:
 					print repr(e)
@@ -133,15 +133,21 @@ class Forwarding(object):
 		event.connection.send(msg)
 
 def get_most_efficient_path (G, src, dst):
-		print "-------------------------"
-		print "Computing shortest paths"
 		all_paths = list(nx.all_shortest_paths(G, src, dst))
 		all_paths_consumptions = [compute_path_consumption(path)[0] for path in all_paths]
+
+
+		print "All paths: [{}, {}]".format(src, dst)
+		i = 1
+		for path in all_paths:
+			print "Path {}".format(i), path, all_paths_consumptions[i - 1]
+			i += 1
+
+		print "---"
 
 		minimal_path = min(all_paths_consumptions)
 		minimal_path_index = all_paths_consumptions.index(minimal_path)
 		print "Minimal path: ", all_paths[minimal_path_index]
-		print "Paths consumptions: ", all_paths_consumptions
 		print "Minimal Path consumption: " + str(minimal_path)
 		return all_paths[minimal_path_index]
 
@@ -174,7 +180,9 @@ class Monitoring (object):
 
 	MIN_WORKLOAD = 0.1
 
-	def __init__ (self):
+	def __init__ (self, G):
+
+		self.G = G
 
 		core.openflow.addListeners(self)
 		core.listen_to_dependencies(self)
@@ -183,20 +191,18 @@ class Monitoring (object):
 
 
 	def request_stats(self):
-
+		# Get consumption of each node in the topology
 		for i in range(len(info_manager.nodes)):
 			self.count_flow_stats_straight += 1
 			self.count_port_stats_straight += 1
 
 		nodes_list = []
-
 		for h in info_manager.hosts:
 			border_node = info_manager.get_node(h.dpid)
 			try:
 				core.openflow.getConnection(border_node.id).send(of.ofp_stats_request(body=of.ofp_flow_stats_request()))
 				self.count_flow_stats_adaptive += 1
 				for p in h.path_list:
-					path_consumption, node_consumption = compute_path_consumption(p.path)
 					path = p.path
 					for node in path:
 						if node not in nodes_list:
@@ -209,6 +215,7 @@ class Monitoring (object):
 			aux += 1
 			core.openflow.getConnection(node).send(of.ofp_stats_request(body=of.ofp_port_stats_request()))
 			self.count_port_stats_adaptive += 1
+
 		if aux == 0:
 			self.count_port_stats_adaptive = 0
 
@@ -217,6 +224,7 @@ class Monitoring (object):
 
 		# keep track of most efficient paths + compute
 		# check if old path is still the most efficient path
+
 
 
 	def get_controller_usage(self):
@@ -315,27 +323,38 @@ class Monitoring (object):
 				update_user_consumption(h.macaddr, user_consumption)
 
 		proportional, baseline, constant = node.get_consumption()
-		print "Dpid=", dpid, "kW/h=", proportional, "wl=", node.get_workload()
+		# print "Dpid=", dpid, "kW/h=", proportional, "wl=", node.get_workload()
 
+		print "Iterating over hosts and computing most efficient paths"
 		print "---------------"
+		print
 		for host in info_manager.hosts:
-			for p in host.path_list:
-				path_consumption, node_consumption = compute_path_consumption(p.path)
+			if host.path_list:
+				print "----- Host {} ------".format(host.ipaddr)
+				# TODO iterate over every path to get the source and destination
+				sources_and_destination = set()
+				for path in host.path_list:
+					# sources_and_destination.add((path.src_dpid, path.dst_dpid))
 
-				most_efficient_path = get_most_efficient_path(G, p.src_dpid, p.dst_dpid)
-				print "Most efficient path", most_efficient_path
-				# if p.path != most_efficient_path:
-				# 	print "Path is not the most efficient path anymore!"
-				# 	print "Old path: ", p
-				# 	print "New path: ", most_efficient_path
-				# 	src_host = info_manager.get_host(dpid=p.src_dpid, port=p.src_port)
-				# 	dst_host = info_manager.get_host(dpid=p.dst_dpid, port=p.dst_port)
-				# 	host.create_path(src_host, dst_host, most_efficient_path)
-				# 	# Modify routing rule
-				# else:
-				# 	print "Most efficient path!"
+				# for src, dest in sources_and_destination:
+					most_efficient_path = get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
 
+			# 		if most_efficient_path not in host.path_list:
+			# # # for p in host.path_list:
+			# # # 	if __name__ == '__main__':
+			# # # 		main()
+			# 			print "Path is not the most efficient path anymore!"
+			# 			print "New path: ", most_efficient_path
+			# 			src_host = info_manager.get_host(dpid=p.src_dpid, port=p.src_port)
+			# 			dst_host = info_manager.get_host(dpid=p.dst_dpid, port=p.dst_port)
+			# 			host.create_path(src_host, dst_host, most_efficient_path)
+			# # 		# Modify routing rule
+			# 		else:
+			# 			print "Most efficient path!"
+
+		print "Finished iterating over hosts"
 		print "---------------"
+		print
 
 					# For each path check if it still the most efficient
 		update_switch_consumption(dpid, proportional, baseline, constant)
@@ -471,5 +490,6 @@ def launch (topo = None):
 		graphicsThread.daemon = True
 		graphicsThread.start()
 
-		core.registerNew(Forwarding)
-		core.registerNew(Monitoring)
+		G = nx.Graph()
+		core.registerNew(Forwarding, G)
+		core.registerNew(Monitoring, G)
