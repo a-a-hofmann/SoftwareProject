@@ -63,6 +63,9 @@ class Forwarding(object):
 			if self.G.has_edge(dpid1,dpid2):
 					self.G.remove_edge(dpid1,dpid2)
 
+
+
+
 	def _handle_PacketIn (self, event):
 		packet = event.parsed
 
@@ -131,6 +134,7 @@ class Forwarding(object):
 
 		msg.actions.append(of.ofp_action_output(port = out_port))
 		event.connection.send(msg)
+
 
 def get_most_efficient_path (G, src, dst):
 		all_paths = list(nx.all_shortest_paths(G, src, dst))
@@ -324,37 +328,43 @@ class Monitoring (object):
 
 		proportional, baseline, constant = node.get_consumption()
 		# print "Dpid=", dpid, "kW/h=", proportional, "wl=", node.get_workload()
+		update_switch_consumption(dpid, proportional, baseline, constant)
 
 		print "Iterating over hosts and computing most efficient paths"
 		print "---------------"
 		print
+
+		CONSUMPTION_THRESHOLD = 500
 		for host in info_manager.hosts:
-			if host.path_list:
+			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
 				# TODO iterate over every path to get the source and destination
 				sources_and_destination = set()
 				for path in host.path_list:
-					# sources_and_destination.add((path.src_dpid, path.dst_dpid))
-
-				# for src, dest in sources_and_destination:
+					path_consumption = compute_path_consumption(path.path)
 					most_efficient_path = get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
 
-			# 		if most_efficient_path not in host.path_list:
-			# # # for p in host.path_list:
-			# # # 	if __name__ == '__main__':
-			# # # 		main()
-			# 			print "Path is not the most efficient path anymore!"
-			# 			print "New path: ", most_efficient_path
-			# 			src_host = info_manager.get_host(dpid=p.src_dpid, port=p.src_port)
-			# 			dst_host = info_manager.get_host(dpid=p.dst_dpid, port=p.dst_port)
-			# 			host.create_path(src_host, dst_host, most_efficient_path)
-			# # 		# Modify routing rule
-			# 		else:
-			# 			print "Most efficient path!"
+					print "Current path {} consumption: {}".format(path.path, path_consumption)
+					if path.path != most_efficient_path and path_consumption[0] > CONSUMPTION_THRESHOLD:
+						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
+						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
+						host.create_path(src_host, dst_host, most_efficient_path)
+						host.remove_path(path)
+						# Change routing rule
+
+
 
 		print "Finished iterating over hosts"
 		print "---------------"
 		print
+
+		from random import randint
+
+		i = randint(0, 10)
+		if i % 2 == 0:
+			update_host_consumption(i, 10000 - i * 100)
+		else:
+			update_host_consumption(i, 10000 + i * 100)
 
 					# For each path check if it still the most efficient
 		update_switch_consumption(dpid, proportional, baseline, constant)

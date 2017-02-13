@@ -234,13 +234,13 @@ class informationManager():
 		max_latency = 0
 		max_latency_threshold = 0
 		max_jitter = 0
-		jitter = []
 		max_jitter_threshold = 0
-		loss = []
 		max_loss = 0
 		max_loss_threshold = 0
-		workload = 0
-		is_sink = False
+		# workload = 0
+		# jitter = []
+		# is_sink = False
+		# loss = []
 
 		def __init__(self, dpid, p, macaddr, ip):
 			self.dpid = dpid
@@ -249,6 +249,10 @@ class informationManager():
 			self.ipaddr = ip
 			self.netw_tokens = self.powerToken()
 			self.path_list = []
+			self.workload = 0
+			self.jitter = []
+			self.is_sink = False
+			self.loss = []
 
 		def create_path (self, src, dst, p):
 			src_dpid, src_port = src.dpid, src.port
@@ -274,6 +278,13 @@ class informationManager():
 			else:
 				path = self.get_path(src_dpid, dst_dpid)
 			if path:
+				self.path_list.remove(path)
+				return True
+			else:
+				return False
+
+		def remove_path(self, path):
+			if path in self.path_list:
 				self.path_list.remove(path)
 				return True
 			else:
@@ -392,8 +403,6 @@ class informationManager():
 			baseline = to_kw(baseline_consumption(w))
 			proportional = to_kw(consumption)
 
-			# Why are you emptying this?
-			# self.port_workload = self.port_workload.fromkeys(self.port_workload,0)
 			self.consumption.append((proportional,baseline, 1200))
 			return to_kw(consumption),baseline, 1200
 
