@@ -20,6 +20,30 @@ client.create_database(dbname)
 
 #function witch transform the input data in JSON and update the database
 
+def get_now_timestamp():
+	"""
+		Gets a timestamp using a format influxdb likes.
+	"""
+	return datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+#update the worload table giving with src and dst mac adresse and workload
+def update_host_consumption(host, workload):
+	json_body = [
+		 {
+		"measurement": "test",
+		"tags": {
+			"host": host
+		},
+		"time": get_now_timestamp(),
+		"fields": {
+			"value": workload
+		}
+	}
+
+		]
+	client.write_points(json_body)
+
 
 #update the worload table giving with src and dst mac adresse and workload
 def update_workload(src, workload):
@@ -29,7 +53,7 @@ def update_workload(src, workload):
 			"tags": {
 				"src_host": src
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"workload": workload
 				}
@@ -48,7 +72,7 @@ def update_latency(src, dst, latency, max_latency):
 				"src_host": src,
 				"dst_host": dst
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"latency": latency,
 				"max_latency": max_latency
@@ -65,7 +89,7 @@ def update_jitter(src, dst, jitter, max_jitter):
 				"src_host": src,
 				"dst_host": dst
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"jitter": jitter,
 				"max_jitter": max_jitter
@@ -82,7 +106,7 @@ def update_pkt_loss(src, dst, pkt_loss, max_loss):
 				"src_host": src,
 				"dst_host": dst
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"pkt_loss": pkt_loss,
 				"max_loss": max_loss
@@ -100,7 +124,7 @@ def update_total_consumption(proportional, baseline, constant):
 			"tags": {
 				"tag": 1
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"proportional": int(proportional),
 				"baseline": int(baseline),
@@ -119,7 +143,7 @@ def update_monitoring_stats(flow_stats_straight, flow_stats_adaptive, port_stats
 			"tags": {
 				"key": 1
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"flow_stats_straight": flow_stats_straight,
 				"flow_stats_adaptive": flow_stats_adaptive,
@@ -138,7 +162,7 @@ def update_user_consumption(src, consumption):
 			"tags": {
 				"src_host": src,
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"total_consumption": consumption
 				}
@@ -155,7 +179,7 @@ def update_user_tokens(macaddr, ntokens, nrenews, threshold):
 			"tags": {
 				"src_host": macaddr
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"network tokens": ntokens,
 				"number renews": nrenews,
@@ -173,7 +197,7 @@ def update_switch_consumption(switch, proportional, baseline, constant):
 			"tags": {
 				"switch": switch
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"proportional": proportional,
 				"baseline": baseline,
@@ -192,7 +216,7 @@ def update_system_utilization(cpu, mem):
 			"tags": {
 				"cpu": 1
 				},
-			"time": datetime.now(),
+			"time": get_now_timestamp(),
 			"fields": {
 				"cpu value": cpu,
 				"mem value": mem

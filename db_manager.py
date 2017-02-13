@@ -6,7 +6,7 @@ import sys
 
 #Examples: http://zetcode.com/db/mysqlpython/
 
-# Database			
+# Database
 # create database greensdn;
 # use greensdn;
 # grant all on greensdn.* to 'mininet'@'localhost';
@@ -66,14 +66,14 @@ class DBManager(object):
 		cur.execute("INSERT INTO User(id, greenplan, dpid,port,mac,network_tokens, compute_tokens, bandwidth, delay, jitter, loss, vcpu) \
 			VALUES(2,'Green 1',21,6,'00:00:00:00:00:02', 8, 8, 9, 100, 50, 1, 50)")
 	  	cur.execute("INSERT INTO User(id, greenplan, dpid,port,mac,network_tokens, compute_tokens, bandwidth, delay, jitter, loss, vcpu) \
-			VALUES(3,'Green 2',21,7,'00:00:00:00:00:03', 4, 4, 3, 100, 50, 1, 50)")	
+			VALUES(3,'Green 2',21,7,'00:00:00:00:00:03', 4, 4, 3, 100, 50, 1, 50)")
 		cur.execute("INSERT INTO User(id, greenplan, dpid,port,mac,network_tokens, compute_tokens, bandwidth, delay, jitter, loss, vcpu) \
 			VALUES(4,'Green 2',21,8,'00:00:00:00:00:04', 4, 4, 3, 100, 50, 1, 50)")
 
 	def __init__(self):
 		try:
-			con = db.connect('localhost', 'mininet', '', 'greensdn')		
-		
+			con = db.connect('localhost', 'mininet', '', 'greensdn')
+
 			with con:
 				cur = con.cursor(db.cursors.DictCursor)
 
@@ -89,13 +89,13 @@ class DBManager(object):
 				#self.populate_tables(cur)
 
 
-		except db.Error, e:		
+		except db.Error, e:
 			print "Error %d: %s" % (e.args[0], e.args[1])
     			sys.exit(1)
 		finally:
-			if con: con.close()    
-	
+			if con: con.close()
+
 def createDB():
 	obj = DBManager()
-	return obj	
+	return obj
 
