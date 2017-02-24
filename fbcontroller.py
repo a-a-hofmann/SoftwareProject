@@ -64,6 +64,8 @@ class Forwarding(object):
 					self.G.remove_edge(dpid1,dpid2)
 
 
+	# Callback to check for efficiency
+	#def callback
 
 
 	def _handle_PacketIn (self, event):
@@ -226,10 +228,6 @@ class Monitoring (object):
 		update_monitoring_stats(self.count_flow_stats_straight, self.count_flow_stats_adaptive, self.count_port_stats_straight, self.count_port_stats_adaptive)
 		info_manager.update_network_consumption()
 
-		# keep track of most efficient paths + compute
-		# check if old path is still the most efficient path
-
-
 
 	def get_controller_usage(self):
 		import commands
@@ -282,12 +280,17 @@ class Monitoring (object):
 		dpid = event.connection.dpid
 		node = info_manager.get_node(dpid)
 
-		node.port_workload = node.port_workload.fromkeys(node.port_workload, 0)
+		# node.port_workload = node.port_workload.fromkeys(node.port_workload, 0)
+		node.reset_port_workload()
+
+		# print "Port stats received for node: {}".format(dpid)
 
 		for stat in event.stats:
 
 			if stat.port_no == 65534:
 				continue
+
+			# print "Stats received for port no:\t{}".format(stat.port_no)
 
 			if not self.prev_stats_ports[dpid][stat.port_no]:
 				self.prev_stats_ports[dpid][stat.port_no] = 0
@@ -300,6 +303,8 @@ class Monitoring (object):
 			global main_gui
 
 			main_gui.hosts_list = info_manager.hosts
+
+			# print "Workload:\t{}".format(mbps)
 
 			if mbps == 0:
 				dpid_dst = node.link[node.id][stat.port_no]
@@ -326,6 +331,10 @@ class Monitoring (object):
 				h.update_tokens(user_consumption)
 				update_user_consumption(h.macaddr, user_consumption)
 
+
+			print "----------"
+
+		# print "Current node workload:\t{}".format(node.get_workload())
 		proportional, baseline, constant = node.get_consumption()
 		# print "Dpid=", dpid, "kW/h=", proportional, "wl=", node.get_workload()
 		update_switch_consumption(dpid, proportional, baseline, constant)
@@ -334,40 +343,37 @@ class Monitoring (object):
 		print "---------------"
 		print
 
-		CONSUMPTION_THRESHOLD = 500
+		CONSUMPTION_THRESHOLD = 20
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
 				# TODO iterate over every path to get the source and destination
-				sources_and_destination = set()
 				for path in host.path_list:
 					path_consumption = compute_path_consumption(path.path)
 					most_efficient_path = get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
 
-					print "Current path {} consumption: {}".format(path.path, path_consumption)
-					if path.path != most_efficient_path and path_consumption[0] > CONSUMPTION_THRESHOLD:
+					path.set_power_consumption(path_consumption[1])
+					print "Current path {} consumption: {}".format(path.path, path.total_consumption)
+					if path.path != most_efficient_path and path.total_consumption > CONSUMPTION_THRESHOLD:
 						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
 						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
-						host.create_path(src_host, dst_host, most_efficient_path)
+						new_path = host.create_path(src_host, dst_host, most_efficient_path)
 						host.remove_path(path)
+
+						path_consumption = compute_path_consumption(most_efficient_path)
+						new_path.set_power_consumption(path_consumption[1])
+						update_path_consumption(new_path)
 						# Change routing rule
+					else:
+
+						update_path_consumption(path)
 
 
 
-		print "Finished iterating over hosts"
+		# print "Finished iterating over hosts"
 		print "---------------"
 		print
-
-		from random import randint
-
-		i = randint(0, 10)
-		if i % 2 == 0:
-			update_host_consumption(i, 10000 - i * 100)
-		else:
-			update_host_consumption(i, 10000 + i * 100)
-
-					# For each path check if it still the most efficient
-		update_switch_consumption(dpid, proportional, baseline, constant)
+		print
 
 
 	def _handle_FlowStatsReceived(self,event):

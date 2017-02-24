@@ -99,6 +99,8 @@ class informationManager():
 				baseline += b
 				constant += c
 
+			node.reset_port_workload()
+
 
 		update_total_consumption(proportional, baseline, constant)
 
@@ -260,6 +262,7 @@ class informationManager():
 
 			p = self.Path(src_dpid, src_port, dst_dpid, dst_port, p)
 			self.path_list.append(p)
+			return p
 
 		def get_path(self, src_dpid, dst_dpid, src_port=None, dst_port=None):
 			if src_port and dst_port:
@@ -299,6 +302,14 @@ class informationManager():
 				self.dst_port = dst_port
 				self.path = path
 				self.power_consumption = dict((dpid,0) for dpid in path)
+				self.total_consumption = 0.0
+
+			def set_total_consumption(self, consumption):
+				self.total_consumption = consumption
+
+			def set_power_consumption(self, power_consumption):
+				self.power_consumption = power_consumption
+				self.total_consumption = sum(power_consumption.values())
 
 		def set_netw_tokens(self, ntokens, nrenewals):
 			assert ntokens > 0
@@ -371,11 +382,17 @@ class informationManager():
 				w += wl
 			return w
 
+
 		def get_port_workload(self, port):
 			w = 0
 			for p, wl in self.port_workload.iteritems():
 				if port == p:
 					return wl
+
+
+		def reset_port_workload(self):
+			self.port_workload = self.port_workload.fromkeys(self.port_workload, 0)
+
 
 		def get_consumption(self, w = None):
 			PORTS = 0

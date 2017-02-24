@@ -28,16 +28,16 @@ def get_now_timestamp():
 
 
 #update the worload table giving with src and dst mac adresse and workload
-def update_host_consumption(host, workload):
+def update_path_consumption(path):
 	json_body = [
 		 {
 		"measurement": "test",
 		"tags": {
-			"host": host
+			"path": str(path.path)
 		},
 		"time": get_now_timestamp(),
 		"fields": {
-			"value": workload
+			"value": path.total_consumption
 		}
 	}
 
