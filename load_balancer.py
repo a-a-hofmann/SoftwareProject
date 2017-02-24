@@ -12,11 +12,11 @@ from pox.lib.addresses import IPAddr,EthAddr
 from collections import defaultdict
 
 class Forwarding(EventMixin):
-	
-	nodes = []	#list of nodes	
+
+	nodes = []	#list of nodes
 
 	prev_stats_ports = defaultdict(lambda:defaultdict(lambda:None))	#structure to store ports statistics per node, e.g., [dpid][match] = mbps
-	
+
 	lb_threshold = 10.0 #In mbps. Threshold to start balancing the load, include whatever you want to test.
 	lb_control = False #control the turn between nodes in the load balancer
 
@@ -27,7 +27,7 @@ class Forwarding(EventMixin):
 		self.listenTo(core.openflow)
 		"Declaring a timer to periodically (1s) call the method 'request_stats'"
 		Timer(1, self.request_stats, recurring=True)
-	
+
 	def request_stats(self):
 		"Request port statistics of every node in the network"
 		for node in self.nodes:
@@ -36,7 +36,7 @@ class Forwarding(EventMixin):
 			except:
 				pass
 
-	
+
 	"Handle events triggered when a new node is connected"
 	def _handle_ConnectionUp (self,event):
 		"If the connected node is not in the list of nodes then append it"
@@ -44,19 +44,19 @@ class Forwarding(EventMixin):
 			self.nodes.append(event.connection.dpid)
 
 	def _handle_PortStatsReceived(self,event):
-		
+
 		"Get the node id"
 		dpid = event.connection.dpid
 
 		def bytes_to_mbps(bytes):
-			return bytes/1024.0/1024.0*8	
+			return bytes/1024.0/1024.0*8
 
 		for stat in event.stats:
 			"Ignore default port"
 			if stat.port_no == 65534:
 				continue
 
-			"Initialize the dict"		
+			"Initialize the dict"
 			if not self.prev_stats_ports[dpid][stat.port_no]:
 					self.prev_stats_ports[dpid][stat.port_no] = 0
 			"The stat.rx_bytes is cumulative, so we take the delta between the last value (stored in prev_stats) and the current value"
@@ -82,14 +82,14 @@ class Forwarding(EventMixin):
 					event.connection.send(msg)
 					return EventHalt
 			#and stat.port_no == 1 is the "incoming" port, i.e., [s1 port whatever <--connectedTo--> port 1 of s2] OR s1 <--connectedTo--> [port 1 of s3]
-			if dpid == 2 and mbps >= self.lb_threshold and stat.port_no == 1: 
+			if dpid == 2 and mbps >= self.lb_threshold and stat.port_no == 1:
 				print "Node=",dpid, "Mbps=",mbps
 			if dpid == 3 and mbps >= self.lb_threshold and stat.port_no == 1:
 				print "Node=",dpid, "Mbps=",mbps
-				
+
 			#if dpid == 4:
 				#print "Node=",dpid,"Mbps=",mbps
-			
+
 
 "Method executed when the controller is started"
 def launch():
@@ -104,7 +104,7 @@ def launch():
 	import pox.log.color
 	pox.log.color.launch()
 	import pox.log
-	pox.log.launch(format="[@@@bold@@@level%(name)-22s@@@reset] " +"@@@bold%(message)s@@@normal")	
+	pox.log.launch(format="[@@@bold@@@level%(name)-22s@@@reset] " +"@@@bold%(message)s@@@normal")
 
 	"Full packets"
 	import pox.misc.full_payload as fp
@@ -124,4 +124,3 @@ def launch():
 
 	"Start the Forwarding"
 	core.registerNew(Forwarding)
-	
