@@ -18,7 +18,6 @@ client.drop_database(dbname)
 client.create_database(dbname)
 
 
-#function witch transform the input data in JSON and update the database
 
 def get_now_timestamp():
 	"""
@@ -27,7 +26,7 @@ def get_now_timestamp():
 	return datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-#update the worload table giving with src and dst mac adresse and workload
+
 def update_path_consumption(path):
 	json_body = [
 		 {

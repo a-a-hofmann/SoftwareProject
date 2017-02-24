@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from pox.lib.addresses import IPAddr,EthAddr
 from update_database import *
+import networkx as nx
 
 
 MIN_WORKLOAD = 0.1
@@ -12,6 +13,36 @@ class informationManager():
 
 	hosts = []
 	nodes = []
+
+	def get_most_efficient_path (self, G, src, dst):
+		all_paths = list(nx.all_shortest_paths(G, src, dst))
+		all_paths_consumptions = [self.compute_path_consumption(path)[0] for path in all_paths]
+
+		print "All paths: [{}, {}]".format(src, dst)
+		i = 1
+		for path in all_paths:
+			print "Path {}".format(i), path, all_paths_consumptions[i - 1]
+			i += 1
+
+		print "---"
+
+		minimal_path = min(all_paths_consumptions)
+		minimal_path_index = all_paths_consumptions.index(minimal_path)
+		print "Minimal path: ", all_paths[minimal_path_index]
+		print "Minimal Path consumption: " + str(minimal_path)
+		return all_paths[minimal_path_index]
+
+
+	def compute_path_consumption (self, path):
+		path_consumption = 0
+		node_consumptions = {}
+		for path_node_id in path:
+			node = self.get_node(path_node_id)
+			proportional, baseline, constant = node.get_consumption()
+			path_consumption += proportional
+			node_consumptions[path_node_id] = proportional
+		return path_consumption, node_consumptions
+
 
 	def set_gui(self, gui):
 
@@ -358,14 +389,18 @@ class informationManager():
 
 		link = defaultdict(lambda:defaultdict(lambda:None))
 		adjacency = defaultdict(lambda:defaultdict(lambda:None))
-		port_workload = {}
-		aux_workload = {}
+		# port_workload = {}
+		# aux_workload = {}
 
 		def __init__(self, event):
 			self.event = event
 			self.connection = event.connection
 			self.id = event.connection.dpid
 			self.consumption = []
+
+			self.port_workload = {}
+			self.aux_workload = {}
+
 
 		def set_workload(self, port, w):
 			try:

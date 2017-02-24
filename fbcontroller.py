@@ -32,12 +32,52 @@ class Forwarding(object):
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
+		Timer(2, self.paths, recurring=True)
+
+
+	def paths(self):
+		print "Iterating over hosts and computing most efficient paths"
+		print "---------------"
+		print
+
+		CONSUMPTION_THRESHOLD = 40
+		for host in info_manager.hosts:
+			if host.path_list and not host.is_sink:
+				print "----- Host {} ------".format(host.ipaddr)
+				for path in host.path_list:
+					path_consumption = info_manager.compute_path_consumption(path.path)
+					most_efficient_path = info_manager.get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
+					path.set_power_consumption(path_consumption[1])
+
+					print "Current path {} consumption: {}".format(path.path, path.total_consumption)
+					if path.path != most_efficient_path and path.total_consumption > CONSUMPTION_THRESHOLD:
+						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
+						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
+
+						# TODO uncomment once I get the rerouting working
+						# new_path = host.create_path(src_host, dst_host, most_efficient_path)
+						# succededRemovingPath = host.remove_path(path)
+						# if not succededRemovingPath:
+						# 	print "Failed to remove path: {}".format(path.path)
+						# 	print "From: "
+						# 	for path in host.path_list:
+						# 		print "{}".format(path.path)
+						#
+						# assert succededRemovingPath
+
+						path_consumption = info_manager.compute_path_consumption(most_efficient_path)
+						new_path.set_power_consumption(path_consumption[1])
+						# Change routing rule
+
+		print "---------------"
+		print
 
 
 	def _handle_ConnectionUp (self,event):
 
 		info_manager.nodes.append(info_manager.Node(event))
 		event.connection.send(of.ofp_flow_mod(command=of.OFPFC_DELETE))
+
 
 	def _handle_ConnectionDown (self,event):
 
@@ -106,7 +146,8 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid).path
 			except:
 				try:
-					path = get_most_efficient_path(self.G, src_host.dpid, dst_host.dpid)
+					# path = get_most_efficient_path(self.G, src_host.dpid, dst_host.dpid)
+					path = nx.shortest_path(self.G, src_host.dpid, dst_host.dpid)
 					src_host.create_path(src_host, dst_host, path)
 				except Exception as e:
 					print repr(e)
@@ -138,43 +179,9 @@ class Forwarding(object):
 		event.connection.send(msg)
 
 
-def get_most_efficient_path (G, src, dst):
-		all_paths = list(nx.all_shortest_paths(G, src, dst))
-		all_paths_consumptions = [compute_path_consumption(path)[0] for path in all_paths]
-
-
-		print "All paths: [{}, {}]".format(src, dst)
-		i = 1
-		for path in all_paths:
-			print "Path {}".format(i), path, all_paths_consumptions[i - 1]
-			i += 1
-
-		print "---"
-
-		minimal_path = min(all_paths_consumptions)
-		minimal_path_index = all_paths_consumptions.index(minimal_path)
-		print "Minimal path: ", all_paths[minimal_path_index]
-		print "Minimal Path consumption: " + str(minimal_path)
-		return all_paths[minimal_path_index]
-
-
-def compute_path_consumption (path):
-	path_consumption = 0
-	node_consumptions = {}
-	for path_node_id in path:
-		node = info_manager.get_node(path_node_id)
-
-		proportional, baseline, constant = node.get_consumption()
-		path_consumption += proportional
-		node_consumptions[path_node_id] = proportional
-
-	return path_consumption, node_consumptions
-
 Payload = namedtuple('Payload', 'timeSent')
 
 class Monitoring (object):
-
-	# global info_manager, G
 
 	count_port_stats_adaptive = 0
 	count_port_stats_straight = 0
@@ -275,22 +282,18 @@ class Monitoring (object):
 		msg.data = packet.pack()
 		core.openflow.getConnection(src_host.dpid).send(msg)
 
+
 	def _handle_PortStatsReceived(self,event):
 
 		dpid = event.connection.dpid
 		node = info_manager.get_node(dpid)
 
-		# node.port_workload = node.port_workload.fromkeys(node.port_workload, 0)
 		node.reset_port_workload()
-
-		# print "Port stats received for node: {}".format(dpid)
 
 		for stat in event.stats:
 
 			if stat.port_no == 65534:
 				continue
-
-			# print "Stats received for port no:\t{}".format(stat.port_no)
 
 			if not self.prev_stats_ports[dpid][stat.port_no]:
 				self.prev_stats_ports[dpid][stat.port_no] = 0
@@ -303,8 +306,6 @@ class Monitoring (object):
 			global main_gui
 
 			main_gui.hosts_list = info_manager.hosts
-
-			# print "Workload:\t{}".format(mbps)
 
 			if mbps == 0:
 				dpid_dst = node.link[node.id][stat.port_no]
@@ -331,49 +332,8 @@ class Monitoring (object):
 				h.update_tokens(user_consumption)
 				update_user_consumption(h.macaddr, user_consumption)
 
-
-			print "----------"
-
-		# print "Current node workload:\t{}".format(node.get_workload())
 		proportional, baseline, constant = node.get_consumption()
-		# print "Dpid=", dpid, "kW/h=", proportional, "wl=", node.get_workload()
 		update_switch_consumption(dpid, proportional, baseline, constant)
-
-		print "Iterating over hosts and computing most efficient paths"
-		print "---------------"
-		print
-
-		CONSUMPTION_THRESHOLD = 20
-		for host in info_manager.hosts:
-			if host.path_list and not host.is_sink:
-				print "----- Host {} ------".format(host.ipaddr)
-				# TODO iterate over every path to get the source and destination
-				for path in host.path_list:
-					path_consumption = compute_path_consumption(path.path)
-					most_efficient_path = get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
-
-					path.set_power_consumption(path_consumption[1])
-					print "Current path {} consumption: {}".format(path.path, path.total_consumption)
-					if path.path != most_efficient_path and path.total_consumption > CONSUMPTION_THRESHOLD:
-						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
-						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
-						new_path = host.create_path(src_host, dst_host, most_efficient_path)
-						host.remove_path(path)
-
-						path_consumption = compute_path_consumption(most_efficient_path)
-						new_path.set_power_consumption(path_consumption[1])
-						update_path_consumption(new_path)
-						# Change routing rule
-					else:
-
-						update_path_consumption(path)
-
-
-
-		# print "Finished iterating over hosts"
-		print "---------------"
-		print
-		print
 
 
 	def _handle_FlowStatsReceived(self,event):
