@@ -1,4 +1,4 @@
-from Tkinter import * 
+from Tkinter import *
 from ttk import Frame, Button, Style
 from collections import defaultdict
 #
@@ -6,7 +6,7 @@ from collections import defaultdict
 #import sys
 
 dictionary = {1:187, 2:189, 3:191, 4:193, 5:195, 6:197, 7:199, 8:201, 9:203, 10:205, 11:207, 12:209, 13:211, 14:213, 15:215, 16:217, 17:219, 18:221, 19:223, 20:225, 21:227, 22:229, 23:231, 24:233, 25:235, 26:237, 27:239, 28:241} #
-links = []  
+links = []
 hosts = []
 switches = []
 sw = []
@@ -18,20 +18,20 @@ v=[[248,20],[108,545],[108,570],[108,595],[108,620],[178,545],[178,570], [178,59
 
 #coordinates of the switches
 #w=[[108,470], [178,470], [248,470], [318,470], [460,470], [530,470], [600,470], [670,470], [178,90], [248,90], [530,90], [600,90], [178,333], [248,333], [530,333], [600,333], [108,204], [178,204], [248,204], [318,204], [460,204], [530,204], [600,204], [670,204]]
-         
-w = [[178,90], [248,90], [530,90], [600,90],[108,204], [178,204], [248,204], [318,204], [460,204], [530,204], [600,204], [670,204],[108,333],[178,333], [248,333], [318,333],[460,333],[530,333], [600,333], [670,333], 
-[108,470], [178,470], [248,470], [318,470], [460,470], [530,470], [600,470], [670,470] ]   
+
+w = [[178,90], [248,90], [530,90], [600,90],[108,204], [178,204], [248,204], [318,204], [460,204], [530,204], [600,204], [670,204],[108,333],[178,333], [248,333], [318,333],[460,333],[530,333], [600,333], [670,333],
+[108,470], [178,470], [248,470], [318,470], [460,470], [530,470], [600,470], [670,470] ]
 
 paintlink = defaultdict(lambda:defaultdict(lambda:None))
 hosts_list = []
 
 class GraphicInterface(Frame):
-        global s 
-        
+        global s
+
         s = 30
         s/=2
-    
-    	
+
+
         def __init__(self, master=None):
 		    # create main frame
 		    master = Tk()
@@ -40,18 +40,18 @@ class GraphicInterface(Frame):
 		    Frame.__init__(self, master)
 		    self.master.title("Topology")
 		    self.master.style = Style()
-		    self.master.resizable(width = True, height = True)   
+		    self.master.resizable(width = True, height = True)
 		    # configure the geometry
 		    self.grid(padx = 10, pady = 10)
 		    # call the funtions
-		    self.createWidgets()                                  
+		    self.createWidgets()
 		    self.paint_active_links()
 		    self.paint_idle_links()
 
 	def paint_idle_links(self):
 		global paintlink
 		for src,dict in paintlink.iteritems():
-			for dst, workload in dict.iteritems():					
+			for dst, workload in dict.iteritems():
 				for pos, l in enumerate(links):
 					if l["typ"] == "sh":
 						continue
@@ -64,12 +64,14 @@ class GraphicInterface(Frame):
 											return
 						self.idle_link(l["l"])
 
+
+
 		self.after(500,self.paint_idle_links)
 
-	def paint_active_links(self):	
+	def paint_active_links(self):
 		global paintlink
 		for src,dict in paintlink.iteritems():
-			for dst, workload in dict.iteritems():					
+			for dst, workload in dict.iteritems():
 				for pos, l in enumerate(links):
 					if l["typ"] == "sh":
 						continue
@@ -103,13 +105,13 @@ class GraphicInterface(Frame):
                 #self.canvas.create_text(810,35, text="30Mbps", fill="navy")
                 #self.canvas.create_line(750,55,760,55, fill="gray", dash=(4,3))
                 #self.canvas.create_text(810,55, text="< 10 Mbps", fill="navy")
-                self.canvas.create_rectangle(20,15, 80, 45, fill="white") 
+                self.canvas.create_rectangle(20,15, 80, 45, fill="white")
                 self.time = self.canvas.create_text(50, 30, text="hh:mm", fill="black", tag="time")
                 self.canvas.pack(fill=BOTH, expand= YES)
-	
+
                 for i in range(178):
-                        links.append({})                        
-              
+                        links.append({})
+
                 links[0]={"l":self.createLinkSwH(w[1],v[0]), "fro":"2", "to":"h18", "typ":"sh"}
                 links[1]={"l":self.createLinkSwH(w[20],v[1]), "fro":"21", "to":"h1", "typ":"sh"}
                 links[2]={"l":self.createLinkSwH(w[20],v[2]), "fro":"21", "to":"h2", "typ":"sh"}
@@ -128,7 +130,7 @@ class GraphicInterface(Frame):
                 links[15]={"l":self.createLinkSwH(w[23],v[15]), "fro":"24", "to":"h15", "typ":"sh"}
                 links[16]={"l":self.createLinkSwH(w[23],v[16]), "fro":"24", "to":"h16", "typ":"sh"}
                 links[17]={"l":self.createLinkSwH(w[26],v[17]), "fro":"27", "to":"h17", "typ":"sh"}
-               
+
                 links[18]={"l":self.createLink30(w[0],w[4]), "fro":"1", "to":"5", "typ":"30"}
                 links[19]={"l":self.createLink30(w[0],w[5]), "fro":"1", "to":"6", "typ":"30"}
                 links[20]={"l":self.createLink30(w[0],w[6]), "fro":"1", "to":"7", "typ":"30"}
@@ -209,7 +211,7 @@ class GraphicInterface(Frame):
                 links[95]={"l":self.createLink30(w[19],w[25]), "fro":"20", "to":"26", "typ":"30"}
                 links[96]={"l":self.createLink30(w[19],w[26]), "fro":"20", "to":"27", "typ":"30"}
                 links[97]={"l":self.createLink30(w[19],w[27]), "fro":"20", "to":"28", "typ":"30"}
-                
+
                 links[98]={"l":self.createLink10(w[0],w[4]), "fro":"1", "to":"5", "typ":"10"}
                 links[99]={"l":self.createLink10(w[0],w[5]), "fro":"1", "to":"6", "typ":"10"}
                 links[100]={"l":self.createLink10(w[0],w[6]), "fro":"1", "to":"7", "typ":"10"}
@@ -290,7 +292,7 @@ class GraphicInterface(Frame):
                 links[175]={"l":self.createLink10(w[19],w[25]), "fro":"20", "to":"26", "typ":"10"}
                 links[176]={"l":self.createLink10(w[19],w[26]), "fro":"20", "to":"27", "typ":"10"}
                 links[177]={"l":self.createLink10(w[19],w[27]), "fro":"20", "to":"28", "typ":"10"}
-              
+
                 for i in range(28):
                         sw.append(self.createSwitch(w[i]))
                         self.createText(w[i],self.switches[i])
@@ -298,7 +300,7 @@ class GraphicInterface(Frame):
                 for i in range(18):
                         ho.append(self.createHost(v[i],i))
                         self.createText(v[i],self.hosts[i])
-                
+
 		self.canvas.create_line(1,640,870,640, fill="light slate gray")
                 self.createSwitch([35,663])
                 self.canvas.create_text(77,663,text='Enabled', fill="black")
@@ -333,83 +335,82 @@ class GraphicInterface(Frame):
         def createLinkSwH(self,sw,h):
                     l = self.canvas.create_line(sw,h, fill="brown", width=2)
                     return l
-    
+
         def createLink30(self,sw1,sw2):
                     l = self.canvas.create_line(sw1[0],sw1[1]-5,sw2[0],sw2[1]-5, fill="gray", width=2)
                     return l
-        
+
         def createLink10(self,sw1,sw2):
             if (sw1[0] == sw2[0]):
                 l = self.canvas.create_line(sw1[0]+5,sw1[1]+5,sw2[0]+5,sw2[1]+5, fill="gray", width=2, dash=(6,3))
             else:
                 l = self.canvas.create_line(sw1[0],sw1[1]+5,sw2[0],sw2[1]+5, fill="gray", width=2, dash=(6,3))
             return l
-    
+
         def createSwitch(self,sw):
                     #sw = self.canvas.create_rectangle(sw[0]-s,sw[1]-s+3,sw[0]+s,sw[1]+s-3, fill="ivory", outline="slate gray")
                     sw = self.canvas.create_rectangle(sw[0]-s,sw[1]-s+3,sw[0]+s,sw[1]+s-3, fill="ivory", outline="slate gray")
 		    return sw
-    
+
         def createHost(self,host,numHost):
             if numHost == 1 or numHost == 5 or numHost == 9 or numHost == 13:
                 ho = self.canvas.create_rectangle(host[0]-s-17,host[1]-s+3,host[0]+s+17,host[1]+s-3, fill="brown4", outline="slate gray")
             elif numHost == 2 or numHost == 6 or numHost == 10 or numHost == 14:
                 ho = self.canvas.create_rectangle(host[0]-s-17,host[1]-s+3,host[0]+s+17,host[1]+s-3, fill="dark olive green", outline="slate gray")
             elif numHost == 3 or numHost == 4 or numHost == 7 or numHost == 8 or numHost == 11 or numHost == 12 or numHost == 15 or numHost == 16:
-                ho = self.canvas.create_rectangle(host[0]-s-17,host[1]-s+3,host[0]+s+17,host[1]+s-3, fill="light green", outline="slate gray")               
-            else:    
+                ho = self.canvas.create_rectangle(host[0]-s-17,host[1]-s+3,host[0]+s+17,host[1]+s-3, fill="light green", outline="slate gray")
+            else:
                 ho = self.canvas.create_rectangle(host[0]-s-17,host[1]-s+3,host[0]+s+17,host[1]+s-3, fill="azure", outline="slate gray")
     		return ho
-    		
-    		
+
+
         def createText(self,coord,tex):
                 self.canvas.create_text(coord[0],coord[1], text=tex)
-    
+
         def change_link(self,link):
                 self.canvas.itemconfig(link, fill="black")
-    
+
         def enable_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="ivory", outline="slate gray")
-    
+
         def sleep_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="gray", outline="black")
-    
+
         def alr_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="yellow", outline="black")
-    
+
         def sust_s_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="deep sky blue", outline="black")
-    
+
         def sust_p_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="royal blue", outline="black")
-    
+
         def sust_s_alr_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="chartreuse", outline="black")
-    
+
         def sust_p_alr_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="forest green", outline="black")
-    
+
         def ssc_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="dark orange", outline="black")
-    
+
         def ssc_alr_sw(self,swi):
                 self.canvas.itemconfig(swi, fill="orange red", outline="black")
-   
+
         def use_host(self, h):
         	self.canvas.itemconfig(h,fill="wheat", outline="black")
-        
+
         def idle_host(self,h):
         	self.canvas.itemconfig(h,fill="azure", outline="slate gray")
-        
-        def use_link(self,l):	
+
+        def use_link(self,l):
         	self.canvas.itemconfig(l,fill="red")
-        
+
         def use_link_low_workload(self,l):
-                self.canvas.itemconfig(l,fill="pink")        
-        
+                self.canvas.itemconfig(l,fill="pink")
+
         def idle_link(self,l):
-        		self.canvas.itemconfig(l,fill="gray")	
+        		self.canvas.itemconfig(l,fill="gray")
 
 def launch():
 	return GraphicInterface()
-	

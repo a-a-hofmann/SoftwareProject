@@ -478,7 +478,7 @@ class informationManager():
 			for h in self.hosts:
 				if h.ipaddr == ip:
 					return h
-					
+
 
 def to_kw(watts):
 	return watts/1000.000

@@ -39,7 +39,7 @@ class Forwarding(object):
 		print "---------------"
 		print
 
-		CONSUMPTION_THRESHOLD = 5
+		CONSUMPTION_THRESHOLD = 50
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
@@ -49,7 +49,7 @@ class Forwarding(object):
 					path.set_power_consumption(path_consumption[1])
 
 					print "Current path {} consumption: {}".format(path.path, path.total_consumption)
-					if True or (path.total_consumption > CONSUMPTION_THRESHOLD and path.path != most_efficient_path):
+					if path.total_consumption > CONSUMPTION_THRESHOLD and path.path != most_efficient_path:
 						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
 						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
 
@@ -68,6 +68,7 @@ class Forwarding(object):
 
 	def modify_path_rules(self, path, src_host, dst_host):
 
+		print "There is a more efficient path, rerouting to: {}".format(path)
 		"modify routing rules for each node in new path"
 		for index, node_dpid in enumerate(path):
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
