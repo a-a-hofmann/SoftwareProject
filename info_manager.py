@@ -132,8 +132,8 @@ class informationManager():
 
 			node.reset_port_workload()
 
-
 		update_total_consumption(proportional, baseline, constant)
+		update_total_consumption_with_policy(proportional, baseline, constant)
 
 
 	def get_host_consumption(self, host, host_wl):
@@ -389,8 +389,6 @@ class informationManager():
 
 		link = defaultdict(lambda:defaultdict(lambda:None))
 		adjacency = defaultdict(lambda:defaultdict(lambda:None))
-		# port_workload = {}
-		# aux_workload = {}
 
 		def __init__(self, event):
 			self.event = event
@@ -412,17 +410,14 @@ class informationManager():
 			self.aux_workload = self.port_workload
 
 		def get_workload(self):
-			w = 0
-			for wl in self.port_workload.itervalues():
-				w += wl
-			return w
+			return sum(self.port_workload.itervalues())
 
 
 		def get_port_workload(self, port):
-			w = 0
-			for p, wl in self.port_workload.iteritems():
-				if port == p:
-					return wl
+			try:
+				return self.port_workload[port]
+			except:
+				return 0
 
 
 		def reset_port_workload(self):
@@ -458,6 +453,29 @@ class informationManager():
 			self.consumption.append((proportional,baseline, 1200))
 			return to_kw(consumption),baseline, 1200
 
+
+		def get_node_out_port(self, dpid, dst_dpid):
+			"""
+			Gets the out port for a given node to its destination.
+			Args:
+				dpid: node dpid.
+				dst: node destination dpid:
+			Returns:
+				the out port for the node dpid to dst_dpid link.
+			"""
+			return self.adjacency[dpid][dst_dpid]
+
+
+	def get_node_out_port(self, dpid, dst_dpid):
+		"""
+		Gets the out port for a given node to its destination.
+		Args:
+			dpid: node dpid.
+			dst: node destination dpid:
+		Returns:
+			the out port for the node dpid to dst_dpid link.
+		"""
+		return self.get_node(dpid).get_node_out_port(dpid, dst_dpid)
 
 	def get_node(self, dpid):
 		for node in self.nodes:

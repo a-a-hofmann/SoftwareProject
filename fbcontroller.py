@@ -26,6 +26,8 @@ main_gui = None
 
 class Forwarding(object):
 
+	CONSUMPTION_THRESHOLD = 50
+
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
@@ -35,59 +37,74 @@ class Forwarding(object):
 		Timer(2, self.paths, recurring=True)
 
 	def paths(self):
-		print "Iterating over hosts and computing most efficient paths"
-		print "---------------"
-		print
+		"""
+		Iterates over all hosts and all active paths and checks whether their path is still the most efficient one.
+		"""
 
-		CONSUMPTION_THRESHOLD = 50
+		print "Iterating over hosts and computing most efficient paths"
+		print "---------------\n"
+
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
 				for path in host.path_list:
-					path_consumption = info_manager.compute_path_consumption(path.path)
-					most_efficient_path = info_manager.get_most_efficient_path(self.G, path.src_dpid, path.dst_dpid)
-					path.set_power_consumption(path_consumption[1])
+					self.check_path(host, path)
 
-					print "Current path {} consumption: {}".format(path.path, path.total_consumption)
-					if path.total_consumption > CONSUMPTION_THRESHOLD and path.path != most_efficient_path:
-						src_host = info_manager.get_host(dpid=path.src_dpid, port=path.src_port)
-						dst_host = info_manager.get_host(dpid=path.dst_dpid, port=path.dst_port)
+		print "---------------\n"
 
-						new_path = host.create_path(src_host, dst_host, most_efficient_path)
-						succededRemovingPath = host.remove_path(path)
-						assert succededRemovingPath
 
-						self.modify_path_rules(most_efficient_path, src_host, dst_host)
+	def check_path(self, host, current_path):
+		"""
+		For a given path check if there is a more efficient one to destination.
+		Args:
+			host: Host.
+			current_path: Current host's path.
+		"""
 
-						path_consumption = info_manager.compute_path_consumption(most_efficient_path)
-						new_path.set_power_consumption(path_consumption[1])
+		source_dpid, source_port = current_path.src_dpid, current_path.src_port
+		dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
 
-		print "---------------"
-		print
+		current_path_consumption = info_manager.compute_path_consumption(current_path.path)
+		most_efficient_path = info_manager.get_most_efficient_path(self.G, source_dpid, dst_dpid)
+		current_path.set_power_consumption(current_path_consumption[1])
+
+		# TODO Load balancing should be done on a per node level.
+		print "Current path {} consumption: {}".format(current_path.path, current_path.total_consumption)
+		if current_path.total_consumption > self.CONSUMPTION_THRESHOLD and current_path.path != most_efficient_path:
+			src_host = info_manager.get_host(dpid=source_dpid, port=source_port)
+			dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
+
+			new_path = host.create_path(src_host, dst_host, most_efficient_path)
+			succededRemovingPath = host.remove_path(current_path)
+			assert succededRemovingPath
+
+			self.modify_path_rules(most_efficient_path, src_host, dst_host)
+
+			path_consumption = info_manager.compute_path_consumption(most_efficient_path)
+			new_path.set_power_consumption(path_consumption[1])
 
 
 	def modify_path_rules(self, path, src_host, dst_host):
 
 		print "There is a more efficient path, rerouting to: {}".format(path)
 		"modify routing rules for each node in new path"
-		for index, node_dpid in enumerate(path):
-			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
-			msg.match.dl_type = ethernet.IP_TYPE
-			msg.match.nw_dst = dst_host.ipaddr
-			msg.priority = 65535 #higher priority
 
-			"intermediate node in the path"
+		msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
+		msg.match.dl_type = ethernet.IP_TYPE
+		msg.match.nw_dst = dst_host.ipaddr
+		msg.priority = 65535 #higher priority
+		for index, node_dpid in enumerate(path):
+
+			"first node in the path"
 			if node_dpid == src_host.dpid:
 				msg.match.nw_src = src_host.ipaddr
 
 			if index + 1 < len(path):
-				dpid2 = path[index + 1]
-				out_port = info_manager.get_node(node_dpid).adjacency[node_dpid][dpid2]
+				"intermediate node in the path"
+				next_node_dpid = path[index + 1]
+				out_port = info_manager.get_node_out_port(node_dpid, next_node_dpid)
 			else:
 				"last node in path"
-				out_port = dst_host.port
-
-			if node_dpid == dst_host.dpid:
 				msg.match.nw_src = src_host.ipaddr
 				out_port = dst_host.port
 
@@ -129,10 +146,6 @@ class Forwarding(object):
 		if event.removed:
 			if self.G.has_edge(dpid1,dpid2):
 					self.G.remove_edge(dpid1,dpid2)
-
-
-	# Callback to check for efficiency
-	#def callback
 
 
 	def _handle_PacketIn (self, event):
@@ -185,22 +198,22 @@ class Forwarding(object):
 		if dpid not in path:
 			return EventHalt
 
+		msg.match.nw_dst = dst_ip
+
 		if dpid == src_host.dpid:
+			"First node in path"
 			msg.match.nw_src = src_ip
 
-		if path.index(dpid)+1 < len(path):
-			msg.match.nw_dst = dst_ip
-			dpid2 = path[path.index(dpid)+1]
-			out_port = info_manager.get_node(dpid).adjacency[dpid][dpid2]
+		node_index = path.index(dpid)
+		if node_index + 1 < len(path):
+			"All nodes in path but the last"
+			next_node_dipd = path[path.index(dpid) + 1]
+			out_port = info_manager.get_node_out_port(dpid, next_node_dipd)
 
-		elif path.index(dpid)+1 == len(path):
-			msg.match.nw_dst = dst_ip
+		elif node_index + 1 == len(path):
+			"Last node in path"
 			out_port = dst_host.port
-
-		if dpid == dst_host.dpid:
 			msg.match.nw_src = src_ip
-			msg.match.nw_dst = dst_ip
-			out_port = dst_host.port
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))
@@ -360,10 +373,10 @@ class Monitoring (object):
 				h.update_tokens(user_consumption)
 				update_user_consumption(h.macaddr, user_consumption)
 
-		consumption = node.get_consumption()[0]
-		if consumption > 0.12:
-			print "Node {} stats:\t{}".format(node.id, consumption)
-			print "\tPorts listening:\t{}".format([stat.port_no for stat in event.stats])
+		# consumption = node.get_consumption()[0]
+		# if consumption > 0.12:
+		# 	print "Node {} stats:\t{}".format(node.id, consumption)
+		# 	print "\tPorts listening:\t{}".format([stat.port_no for stat in event.stats])
 
 		proportional, baseline, constant = node.get_consumption()
 		update_switch_consumption(dpid, proportional, baseline, constant)
