@@ -305,10 +305,6 @@ class informationManager():
 		max_jitter_threshold = 0
 		max_loss = 0
 		max_loss_threshold = 0
-		# workload = 0
-		# jitter = []
-		# is_sink = False
-		# loss = []
 
 		def __init__(self, dpid, p, macaddr, ip):
 			self.dpid = dpid
@@ -330,6 +326,7 @@ class informationManager():
 			self.path_list.append(p)
 			return p
 
+
 		def get_path(self, src_dpid, dst_dpid, src_port=None, dst_port=None):
 			if src_port and dst_port:
 				for p in self.path_list:
@@ -340,6 +337,7 @@ class informationManager():
 				for p in self.path_list:
 					if p.src_dpid == src_dpid and p.dst_dpid == dst_dpid:
 						return p
+
 
 		def remove_path(self, src_dpid, dst_dpid, src_port=None, dst_port=None):
 			if src_port and dst_port:
@@ -352,12 +350,14 @@ class informationManager():
 			else:
 				return False
 
+
 		def remove_path(self, path):
 			if path in self.path_list:
 				self.path_list.remove(path)
 				return True
 			else:
 				return False
+
 
 		class Path(object):
 			workload = 0.0
@@ -370,12 +370,15 @@ class informationManager():
 				self.power_consumption = dict((dpid,0) for dpid in path)
 				self.total_consumption = 0.0
 
+
 			def set_total_consumption(self, consumption):
 				self.total_consumption = consumption
+
 
 			def set_power_consumption(self, power_consumption):
 				self.power_consumption = power_consumption
 				self.total_consumption = sum(power_consumption.values())
+
 
 		def set_netw_tokens(self, ntokens, nrenewals):
 			assert ntokens > 0
@@ -386,12 +389,14 @@ class informationManager():
 
 			update_user_tokens(self.macaddr, ntokens, nrenewals, ntokens * 0.2)
 
+
 		def calc_jitter(self, latency):
 			self.jitter.append(latency)
 			if len(self.jitter) > 1:
 				return abs(self.jitter[len(self.jitter)-2] - self.jitter[len(self.jitter)-1])
 			else:
 				return 0.0
+
 
 		def update_tokens(self, cons):
 			if self.is_sink:
@@ -413,6 +418,7 @@ class informationManager():
 				else:
 					self.netw_tokens.decrease_rate = True
 
+
 	class Node(object):
 
 		CHASSIS = 200.0
@@ -424,6 +430,7 @@ class informationManager():
 
 		link = defaultdict(lambda:defaultdict(lambda:None))
 		adjacency = defaultdict(lambda:defaultdict(lambda:None))
+
 
 		def __init__(self, event):
 			self.event = event
@@ -443,6 +450,7 @@ class informationManager():
 				self.port_workload[port] = w
 
 			self.aux_workload = self.port_workload
+
 
 		def get_workload(self):
 			return sum(self.port_workload.itervalues())
@@ -511,6 +519,7 @@ class informationManager():
 			the out port for the node dpid to dst_dpid link.
 		"""
 		return self.get_node(dpid).get_node_out_port(dpid, dst_dpid)
+
 
 	def get_node(self, dpid):
 		for node in self.nodes:
