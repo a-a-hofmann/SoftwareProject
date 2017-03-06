@@ -9,6 +9,7 @@ from collections import defaultdict
 from collections import namedtuple
 import time
 
+
 import pox.lib.packet as pkt
 from pox.lib.packet.ipv4 import ipv4
 from pox.lib.packet.arp import arp
@@ -23,10 +24,12 @@ from update_database import *
 info_manager = informationManager()
 
 main_gui = None
+PATH_REFRESH_RATE = 1
 
 class Forwarding(object):
 
 	CONSUMPTION_THRESHOLD = 50
+	LB_THRESHOLD = 100
 
 	def __init__(self, G):
 		# Network Graph
@@ -34,14 +37,15 @@ class Forwarding(object):
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
-		Timer(2, self.paths, recurring=True)
+		Timer(PATH_REFRESH_RATE, self.paths, recurring=True)
+
 
 	def paths(self):
 		"""
 		Iterates over all hosts and all active paths and checks whether their path is still the most efficient one.
 		"""
 
-		print "Iterating over hosts and computing most efficient paths"
+		print "\nIterating over hosts and computing most efficient paths"
 		print "---------------\n"
 
 		for host in info_manager.hosts:
@@ -61,27 +65,87 @@ class Forwarding(object):
 			current_path: Current host's path.
 		"""
 
-		source_dpid, source_port = current_path.src_dpid, current_path.src_port
+		src_dpid, src_port = current_path.src_dpid, current_path.src_port
 		dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
 
-		current_path_consumption = info_manager.compute_path_consumption(current_path.path)
-		most_efficient_path = info_manager.get_most_efficient_path(self.G, source_dpid, dst_dpid)
-		current_path.set_power_consumption(current_path_consumption[1])
+		current_path_consumption, node_consumptions, node_workloads, node_workload = info_manager.compute_path_information(current_path.path)
+		most_efficient_path = info_manager.get_most_efficient_path(self.G, src_dpid, dst_dpid)
+		current_path.set_power_consumption(node_consumptions)
+		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
 
-		# TODO Load balancing should be done on a per node level.
-		print "Current path {} consumption: {}".format(current_path.path, current_path.total_consumption)
-		if current_path.total_consumption > self.CONSUMPTION_THRESHOLD and current_path.path != most_efficient_path:
-			src_host = info_manager.get_host(dpid=source_dpid, port=source_port)
-			dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
+		if overloaded_nodes:
+			new_path = self.get_path_for_load_balancing(src_dpid, dst_dpid, current_path, overloaded_nodes)
 
-			new_path = host.create_path(src_host, dst_host, most_efficient_path)
-			succededRemovingPath = host.remove_path(current_path)
-			assert succededRemovingPath
+			if new_path:
+				"""If there is a new path then reroute traffic.
+				Otherwise all other paths are overloaded as well, do nothing"""
+				src_host = info_manager.get_host(dpid=src_dpid, port=src_port)
+				dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
 
-			self.modify_path_rules(most_efficient_path, src_host, dst_host)
+				new_path = host.create_path(src_host, dst_host, new_path)
+				succededRemovingPath = host.remove_path(current_path)
+				assert succededRemovingPath
 
-			path_consumption = info_manager.compute_path_consumption(most_efficient_path)
-			new_path.set_power_consumption(path_consumption[1])
+				self.modify_path_rules(most_efficient_path, src_host, dst_host)
+
+				path_consumption = info_manager.compute_path_information(new_path.path)
+				new_path.set_power_consumption(path_consumption[1])
+
+
+	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
+		"""
+		Gets a new path from src to dst, taking node workload into account.
+		Args:
+			src: Source node dpid.
+			dst: Destination node dpid.
+			current_path: Current path as list of node dpids.
+			overloaded_nodes: which nodes are overloaded in the current path.
+		Returns:
+		 	candidate: new path or None if no path was found.
+		"""
+
+		all_paths = info_manager.all_paths(self.G, src, dst)
+		all_paths.remove(current_path.path)
+		current_path_consumption = current_path.total_consumption
+
+		candidates = []
+		for candidate in all_paths:
+			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate)
+
+			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
+				"Choose as candidate only if it isn't overloaded as well."
+				candidate_path_consumption = info_manager.compute_path_information(candidate)[0]
+				if current_path_consumption + candidate_path_consumption < self.CONSUMPTION_THRESHOLD:
+					candidates.append(candidate)
+
+		if candidates:
+			return candidates[0]
+		return None
+
+
+	def check_nodes_in_path_for_loadbalancing(self, workloads=None, path=None):
+		"""
+		For a given path check if any of the nodes has too much workload.
+		Args:
+			workloads: dictionary of node dpids and workload of each node (default=None).
+			path: path from which to compute node workloads (default=None)
+		Returns:
+			node_list: list of nodes whose workload is over the threshold
+			and their current workload. src and dst nodes are omitted since
+			there is nothing that can be done in those cases.
+		"""
+		if path and not workloads:
+			workloads = info_manager.compute_path_information(path)[2]
+
+		overloaded_nodes = []
+		for node_id, node_workload in workloads.iteritems():
+			if node_workload > self.LB_THRESHOLD:
+				overloaded_nodes.append((node_id, node_workload))
+
+		if path:
+			src_node, dst_node = path[0], path[-1]
+			overloaded_nodes = [overloaded for overloaded in overloaded_nodes if overloaded[0] != src_node and overloaded[0] != dst_node]
+		return overloaded_nodes
 
 
 	def modify_path_rules(self, path, src_host, dst_host):
@@ -92,7 +156,7 @@ class Forwarding(object):
 		msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 		msg.match.dl_type = ethernet.IP_TYPE
 		msg.match.nw_dst = dst_host.ipaddr
-		msg.priority = 65535 #higher priority
+		msg.priority = 65535 #highest priority
 		for index, node_dpid in enumerate(path):
 
 			"first node in the path"
@@ -109,7 +173,7 @@ class Forwarding(object):
 				out_port = dst_host.port
 
 
-			print "Source node {} routing node {} to {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
+			# print "Source node {} routing node {} to {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
 
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)

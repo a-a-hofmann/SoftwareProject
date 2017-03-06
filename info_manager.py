@@ -14,9 +14,19 @@ class informationManager():
 	hosts = []
 	nodes = []
 
-	def get_most_efficient_path (self, G, src, dst):
-		all_paths = list(nx.all_shortest_paths(G, src, dst))
-		all_paths_consumptions = [self.compute_path_consumption(path)[0] for path in all_paths]
+	def get_most_efficient_path(self, G, src, dst):
+		"""
+		For a given source src and destination dst, compute the most energy efficient path.
+		Args:
+			G: graph.
+			src: source dpid.
+			dst: destination dpid.
+		Returns:
+			path_consumption: consumption of the path as a whole.
+			node_consumptions: dict of node dpids and node consumption
+		"""
+		all_paths = self.all_paths(G, src, dst)
+		all_paths_consumptions = [self.compute_path_information(path)[0] for path in all_paths]
 
 		print "All paths: [{}, {}]".format(src, dst)
 		i = 1
@@ -33,15 +43,40 @@ class informationManager():
 		return all_paths[minimal_path_index]
 
 
-	def compute_path_consumption (self, path):
+	def all_paths(self, G, src, dst):
+		"""
+		For a given source src and destination dst, compute all shortest paths.
+		Args:
+			G: graph.
+			src: source dpid.
+			dst: destination dpid.
+		Returns:
+			list of all paths between src and dst.
+		"""
+		return list(nx.all_shortest_paths(G, src, dst))
+
+
+	def compute_path_information(self, path):
+		"""
+		For a given path compute path consumption and per node consumption.
+		Args:
+			path: list of node dpids representing a path.
+		Returns:
+			path_consumption: consumption of the path as a whole.
+			node_consumptions: dict of node dpids and node consumption
+		"""
 		path_consumption = 0
 		node_consumptions = {}
+		node_workloads = {}
+		path_workload = 0
 		for path_node_id in path:
 			node = self.get_node(path_node_id)
 			proportional, baseline, constant = node.get_consumption()
 			path_consumption += proportional
 			node_consumptions[path_node_id] = proportional
-		return path_consumption, node_consumptions
+			node_workloads[path_node_id] = node.get_workload()
+			path_workload += node.get_workload()
+		return path_consumption, node_consumptions, node_workloads, path_workload
 
 
 	def set_gui(self, gui):

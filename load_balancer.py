@@ -67,7 +67,7 @@ class Forwarding(EventMixin):
 
 			if dpid == 1:
 				#print "Node=",dpid,"Mbps=",mbps
-				if mbps >= self.lb_threshold:
+				if 1 >= self.lb_threshold:
 					if self.lb_control == False:
 						self.lb_control = True
 						out_port = 4
