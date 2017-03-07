@@ -14,6 +14,26 @@ class informationManager():
 	hosts = []
 	nodes = []
 
+	# def pre_compute_paths(self, G):
+	# 	print "Prebaking paths"
+	# 	print "Number of hosts: {}".format(hosts)
+	#
+	# 	paths = defaultdict(lambda : defaultdict(list))
+	#
+	# 	host_ids = set(host.dpid for host in hosts)
+	# 	host_combinations = itertools.combinations(host_ids, 2)
+	#
+	# 	for src, dst in host_combinations:
+	# 		for i in xrange(PATH_LIMIT):
+	# 			paths[src][dst].append(nx.all_shortest_paths(self.G, src, dst))
+	#
+	# 	print "------ Prebaked paths -----\n"
+	# 	for src in paths.keys():
+	# 		for dst in paths[src].keys():
+	# 			print "Path(s) for ({}, {})".format(src, dst)
+	# 			for path in paths[src][dst]:
+	# 				print "\t{}".format(path)
+
 	def get_most_efficient_path(self, G, src, dst):
 		"""
 		For a given source src and destination dst, compute the most energy efficient path.
@@ -81,7 +101,7 @@ class informationManager():
 
 	def set_gui(self, gui):
 
-		def create_host(dpid, port, macaddr, ip):
+		def create_host(dpid, port, macaddr, ip, is_sink=False):
 			host = self.Host(dpid, port, macaddr, ip)
 			if not host.is_sink:
 				self.hosts.append(host)
@@ -141,10 +161,8 @@ class informationManager():
 			create_host(26,8, EthAddr("00:00:00:00:00:16"),IPAddr("10.0.0.16"))
 			'''
 
-			snk1 = create_host(27,5, EthAddr("00:00:00:00:00:17"),IPAddr("10.0.0.5"))
-			snk1.is_sink = True
-			snk2 = create_host(2,5, EthAddr("00:00:00:00:00:18"),IPAddr("10.0.0.6"))
-			snk2.is_sink = True
+			snk1 = create_host(27,5, EthAddr("00:00:00:00:00:17"),IPAddr("10.0.0.5"), True)
+			snk2 = create_host(2,5, EthAddr("00:00:00:00:00:18"),IPAddr("10.0.0.6"), True)
 		else:
 			print "***** PLEASE, SPECIFY SPECIFY THE TOPOLOGY USER INTERFACE USING THE PARAMETER '--topo='\nE.g., --topo=fb or --topo=rnp"
 

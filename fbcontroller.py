@@ -8,6 +8,7 @@ from datetime import datetime
 from collections import defaultdict
 from collections import namedtuple
 import time
+import itertools
 
 
 import pox.lib.packet as pkt
@@ -20,29 +21,63 @@ from pox.lib.addresses import IPAddr,EthAddr
 import networkx as nx
 from info_manager import *
 from update_database import *
+from path_table import PathTable
+
+import matplotlib.pyplot as plt
 
 info_manager = informationManager()
 
 main_gui = None
 PATH_REFRESH_RATE = 1
+PATH_LIMIT = 10
 
 class Forwarding(object):
+	"""
+	Forwading controller.
+	"""
 
 	CONSUMPTION_THRESHOLD = 50
-	LB_THRESHOLD = 100
+	LB_THRESHOLD = 50
 
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
+		self.path_table = PathTable()
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
 		Timer(PATH_REFRESH_RATE, self.paths, recurring=True)
+		Timer(10, self.pre_compute_paths, args={G: G}, recurring=False)
+
+
+	def pre_compute_paths(self, G):
+		print "Prebaking paths"
+		print "Number of hosts: {}".format(len(info_manager.hosts))
+
+		host_ids = set(host.dpid for host in info_manager.hosts)
+		print host_ids
+		host_combinations = itertools.combinations(host_ids, 2)
+
+		for src, dst in host_combinations:
+			paths_generator = nx.all_shortest_paths(self.G, src, dst)
+
+			counter = 0
+			for path in paths_generator:
+				if counter > PATH_LIMIT:
+					break
+				self.path_table.put_path(path = tuple(paths_generator.next()), src = src, dst = dst)
+
+		print "------ Prebaked paths -----\n"
+		print self.path_table
+
+		# nx.draw(G, with_labels=True)
+		# plt.show()
 
 
 	def paths(self):
 		"""
-		Iterates over all hosts and all active paths and checks whether their path is still the most efficient one.
+		Iterates over all hosts and all active paths and
+		checks whether their path is still the most efficient one.
 		"""
 
 		print "\nIterating over hosts and computing most efficient paths"
@@ -562,6 +597,7 @@ def launch (topo = None):
 			main_gui = gui
 			gui = gui.launch()
 			gui.mainloop()
+			info_manager.pre_compute_paths()
 		elif topo == "rnp":
 			import rnpgui as gui
 			info_manager.set_gui(topo)
@@ -575,7 +611,6 @@ def launch (topo = None):
 		graphicsThread = Thread(target = open_gui)
 		graphicsThread.daemon = True
 		graphicsThread.start()
-
 		G = nx.Graph()
 		core.registerNew(Forwarding, G)
 		core.registerNew(Monitoring, G)
