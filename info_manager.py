@@ -16,26 +16,6 @@ class informationManager():
 	nodes = []
 	path_table = None
 
-	# def pre_compute_paths(self, G):
-	# 	print "Prebaking paths"
-	# 	print "Number of hosts: {}".format(hosts)
-	#
-	# 	paths = defaultdict(lambda : defaultdict(list))
-	#
-	# 	host_ids = set(host.dpid for host in hosts)
-	# 	host_combinations = itertools.combinations(host_ids, 2)
-	#
-	# 	for src, dst in host_combinations:
-	# 		for i in xrange(PATH_LIMIT):
-	# 			paths[src][dst].append(nx.all_shortest_paths(self.G, src, dst))
-	#
-	# 	print "------ Prebaked paths -----\n"
-	# 	for src in paths.keys():
-	# 		for dst in paths[src].keys():
-	# 			print "Path(s) for ({}, {})".format(src, dst)
-	# 			for path in paths[src][dst]:
-	# 				print "\t{}".format(path)
-
 	def get_most_efficient_path(self, G, src, dst):
 		"""
 		For a given source src and destination dst, compute the most energy efficient path.
