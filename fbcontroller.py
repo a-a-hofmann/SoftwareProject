@@ -42,7 +42,6 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.path_table = PathTable()
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
@@ -51,11 +50,7 @@ class Forwarding(object):
 
 
 	def pre_compute_paths(self, G):
-		print "Prebaking paths"
-		print "Number of hosts: {}".format(len(info_manager.hosts))
-
 		host_ids = set(host.dpid for host in info_manager.hosts)
-		print host_ids
 		host_combinations = itertools.combinations(host_ids, 2)
 
 		for src, dst in host_combinations:
@@ -65,10 +60,7 @@ class Forwarding(object):
 			for path in paths_generator:
 				if counter > PATH_LIMIT:
 					break
-				self.path_table.put_path(path = tuple(paths_generator.next()), src = src, dst = dst)
-
-		print "------ Prebaked paths -----\n"
-		print self.path_table
+				info_manager.path_table.put_path(path = tuple(paths_generator.next()), src = src, dst = dst)
 
 		# nx.draw(G, with_labels=True)
 		# plt.show()
@@ -206,7 +198,6 @@ class Forwarding(object):
 				"last node in path"
 				msg.match.nw_src = src_host.ipaddr
 				out_port = dst_host.port
-
 
 			# print "Source node {} routing node {} to {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
 
@@ -612,5 +603,6 @@ def launch (topo = None):
 		graphicsThread.daemon = True
 		graphicsThread.start()
 		G = nx.Graph()
+		info_manager.path_table = PathTable()
 		core.registerNew(Forwarding, G)
 		core.registerNew(Monitoring, G)

@@ -3,6 +3,7 @@ from datetime import datetime
 from pox.lib.addresses import IPAddr,EthAddr
 from update_database import *
 import networkx as nx
+from path_table import PathTable
 
 
 MIN_WORKLOAD = 0.1
@@ -13,6 +14,7 @@ class informationManager():
 
 	hosts = []
 	nodes = []
+	path_table = None
 
 	# def pre_compute_paths(self, G):
 	# 	print "Prebaking paths"
@@ -46,6 +48,7 @@ class informationManager():
 			node_consumptions: dict of node dpids and node consumption
 		"""
 		all_paths = self.all_paths(G, src, dst)
+		print "All paths {}".format(all_paths)
 		all_paths_consumptions = [self.compute_path_information(path)[0] for path in all_paths]
 
 		print "All paths: [{}, {}]".format(src, dst)
@@ -73,7 +76,13 @@ class informationManager():
 		Returns:
 			list of all paths between src and dst.
 		"""
-		return list(nx.all_shortest_paths(G, src, dst))
+		if self.path_table.has_path(src, dst):
+			return self.path_table.get_path(src, dst)
+		else:
+			"Cache newly computed path"
+			for path in nx.all_shortest_paths(G, src, dst)
+				self.path_table.put_path(tuple(path), src, dst)
+			return self.path_table.get_path(G, src, dst)
 
 
 	def compute_path_information(self, path):

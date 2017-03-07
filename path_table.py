@@ -11,7 +11,7 @@ class PathTable(object):
         self.reverse = defaultdict(lambda: defaultdict(set))
 
 
-    def has_path_for_nodes(self, src, dst):
+    def has_path(self, src, dst):
         """
         Checks if the lookup table has an entry for the given src-dst.
         Args:
@@ -21,12 +21,10 @@ class PathTable(object):
             True iff an entry exists, False otherwise.
         """
         if src in self.paths:
-            if dst in self.paths[src]:
-                pass
-            else:
-                return False
-        else:
-            return False
+            return dst in self.paths[src]
+        elif src in self.reverse:
+            return dst in self.reverse[src]
+        return False
 
 
     def get_path(self, src, dst):
@@ -38,10 +36,11 @@ class PathTable(object):
         Returns:
             path as list if exists, None otherwise
         """
-        try:
-            return self.paths[src][dst]
-        except:
-            return None
+        if src in self.paths:
+            return list(self.paths[src][dst])
+        elif src in self.reverse:
+            return list(self.reverse[src][dst])
+        return None
 
 
     def put_path(self, path, src=None, dst=None):
@@ -58,6 +57,8 @@ class PathTable(object):
                 src, dst = path[0], path[-1]
             self.paths[src][dst].add(path)
             self.reverse[dst][src].add(path[::-1])
+        else:
+            print "Empty path received"
 
 
     def __str__(self):
