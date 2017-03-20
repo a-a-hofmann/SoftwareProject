@@ -36,8 +36,8 @@ class Forwarding(object):
 	Forwading controller.
 	"""
 
-	CONSUMPTION_THRESHOLD = 50
-	LB_THRESHOLD = 50
+	CONSUMPTION_THRESHOLD = 10
+	LB_THRESHOLD = 10
 
 	def __init__(self, G):
 		# Network Graph
@@ -96,11 +96,11 @@ class Forwarding(object):
 			current_path: Current host's path.
 		"""
 
+		print "Current path: {}".format(current_path.path)
 		src_dpid, src_port = current_path.src_dpid, current_path.src_port
 		dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
 
 		node_consumptions, node_workloads = info_manager.compute_path_information(current_path.path)
-		most_efficient_path = info_manager.get_most_efficient_path(self.G, src_dpid, dst_dpid)
 		current_path.set_power_consumption(node_consumptions)
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
 
@@ -117,7 +117,7 @@ class Forwarding(object):
 				succededRemovingPath = host.remove_path(current_path)
 				assert succededRemovingPath
 
-				self.modify_path_rules(most_efficient_path, src_host, dst_host)
+				self.modify_path_rules(new_path.path, src_host, dst_host)
 
 				node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
 				path_consumption = sum(node_consumption_new_path.itervalues())

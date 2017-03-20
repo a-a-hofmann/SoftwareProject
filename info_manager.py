@@ -166,6 +166,7 @@ class informationManager():
 					baseline += b
 					constant += c
 				del node.consumption[:]
+				update_node_data(node.id, node.get_workload(), proportional, baseline, constant)
 			else:
 				p, b, c = node.get_consumption(node.get_workload())
 				proportional += p

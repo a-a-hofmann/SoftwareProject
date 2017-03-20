@@ -44,6 +44,26 @@ def update_path_consumption(path):
 	client.write_points(json_body)
 
 #update the consume table with src and dst mac adresse and
+def update_node_data(node_id, workload, consumption, baseline, constant):
+	json_body = [
+		 {
+			"measurement": "node consumptions",
+			"tags": {
+				"node_id": int(node_id)
+				},
+			"time": get_now_timestamp(),
+			"fields": {
+				"workload": int(workload),
+				"consumption": int(consumption),
+				"baseline": int(baseline),
+				"constant": int(constant)
+				}
+		}
+
+    	]
+	client.write_points(json_body)
+
+#update the consume table with src and dst mac adresse and
 def update_total_consumption_with_policy(proportional, baseline, constant):
 	json_body = [
 		 {
