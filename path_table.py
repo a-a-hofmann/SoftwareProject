@@ -52,6 +52,7 @@ class PathTable(object):
             src: source id. If not supplied inferrs that path[0] is src.
             dst: destination id. If not supplied inferrs that path[-1] is dst.
         """
+        path = tuple(path)
         if path:
             if not src or not dst:
                 src, dst = path[0], path[-1]

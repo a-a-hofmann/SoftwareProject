@@ -50,6 +50,13 @@ class Forwarding(object):
 
 
 	def pre_compute_paths(self, G):
+		"""
+		Computes paths between all hosts in the network. It computes up to
+		PATH_LIMIT paths per each host.
+		All computed paths are saved to a path lookup table path_table.py
+		Args:
+			G: networkx graph containing the topology of the network.
+		"""
 		host_ids = set(host.dpid for host in info_manager.hosts)
 		host_combinations = itertools.combinations(host_ids, 2)
 
@@ -61,9 +68,6 @@ class Forwarding(object):
 				if counter > PATH_LIMIT:
 					break
 				info_manager.path_table.put_path(path = tuple(paths_generator.next()), src = src, dst = dst)
-
-		# nx.draw(G, with_labels=True)
-		# plt.show()
 
 
 	def paths(self):
@@ -95,7 +99,7 @@ class Forwarding(object):
 		src_dpid, src_port = current_path.src_dpid, current_path.src_port
 		dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
 
-		current_path_consumption, node_consumptions, node_workloads, node_workload = info_manager.compute_path_information(current_path.path)
+		node_consumptions, node_workloads = info_manager.compute_path_information(current_path.path)
 		most_efficient_path = info_manager.get_most_efficient_path(self.G, src_dpid, dst_dpid)
 		current_path.set_power_consumption(node_consumptions)
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
@@ -115,8 +119,9 @@ class Forwarding(object):
 
 				self.modify_path_rules(most_efficient_path, src_host, dst_host)
 
-				path_consumption = info_manager.compute_path_information(new_path.path)
-				new_path.set_power_consumption(path_consumption[1])
+				node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
+				path_consumption = sum(node_consumption_new_path.itervalues())
+				new_path.set_power_consumption(node_consumption_new_path)
 
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
@@ -141,7 +146,7 @@ class Forwarding(object):
 
 			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
 				"Choose as candidate only if it isn't overloaded as well."
-				candidate_path_consumption = info_manager.compute_path_information(candidate)[0]
+				candidate_path_consumption = sum(info_manager.compute_path_information(candidate)[0].itervalues())
 				if current_path_consumption + candidate_path_consumption < self.CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
 
@@ -162,7 +167,7 @@ class Forwarding(object):
 			there is nothing that can be done in those cases.
 		"""
 		if path and not workloads:
-			workloads = info_manager.compute_path_information(path)[2]
+			workloads = info_manager.compute_path_information(path)[1]
 
 		overloaded_nodes = []
 		for node_id, node_workload in workloads.iteritems():
