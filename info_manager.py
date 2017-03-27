@@ -16,6 +16,19 @@ class informationManager():
 	nodes = []
 	path_table = None
 
+	all_active_paths = defaultdict(lambda: defaultdict(set))
+
+	def get_all_hosts_paths(self):
+		for host in self.hosts:
+			for path in host.path_list:
+				src, dst = path.path[0], path.path[-1]
+				self.all_active_paths[src][dst].add(tuple(path.path))
+
+		for src in self.all_active_paths:
+			for dst in self.all_active_paths[src]:
+				print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
+
+
 	def get_most_efficient_path(self, G, src, dst):
 		"""
 		For a given source src and destination dst, compute the most energy efficient path.

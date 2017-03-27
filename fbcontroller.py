@@ -79,6 +79,8 @@ class Forwarding(object):
 		print "\nIterating over hosts and computing most efficient paths"
 		print "---------------\n"
 
+		info_manager.get_all_hosts_paths()
+
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
@@ -114,10 +116,11 @@ class Forwarding(object):
 				dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
 
 				new_path = host.create_path(src_host, dst_host, new_path)
-				succededRemovingPath = host.remove_path(current_path)
-				assert succededRemovingPath
 
-				self.modify_path_rules(new_path.path, src_host, dst_host)
+				# succededRemovingPath = host.remove_path(current_path)
+				# assert succededRemovingPath
+				"Load balance"
+				self.modify_path_rules(new_path.path, src_host, dst_host, current_path.path)
 
 				node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
 				path_consumption = sum(node_consumption_new_path.itervalues())
@@ -180,24 +183,28 @@ class Forwarding(object):
 		return overloaded_nodes
 
 
-	def modify_path_rules(self, path, src_host, dst_host):
+	def modify_path_rules(self, new_path, src_host, dst_host, path_to_split=None):
 
-		print "There is a more efficient path, rerouting to: {}".format(path)
+		print "There is a more efficient path, rerouting to: {}".format(new_path)
 		"modify routing rules for each node in new path"
 
-		msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
+		if path_to_split:
+			msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
+		else:
+			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY_STRICT)
+
 		msg.match.dl_type = ethernet.IP_TYPE
 		msg.match.nw_dst = dst_host.ipaddr
 		msg.priority = 65535 #highest priority
-		for index, node_dpid in enumerate(path):
+		for index, node_dpid in enumerate(new_path):
 
 			"first node in the path"
 			if node_dpid == src_host.dpid:
 				msg.match.nw_src = src_host.ipaddr
 
-			if index + 1 < len(path):
+			if index + 1 < len(new_path):
 				"intermediate node in the path"
-				next_node_dpid = path[index + 1]
+				next_node_dpid = new_path[index + 1]
 				out_port = info_manager.get_node_out_port(node_dpid, next_node_dpid)
 			else:
 				"last node in path"
@@ -362,8 +369,10 @@ class Monitoring (object):
 		aux = 0
 		for node in nodes_list:
 			aux += 1
-			core.openflow.getConnection(node).send(of.ofp_stats_request(body=of.ofp_port_stats_request()))
-			self.count_port_stats_adaptive += 1
+			connection = core.openflow.getConnection(node)
+			if connection:
+				connection.send(of.ofp_stats_request(body=of.ofp_port_stats_request()))
+				self.count_port_stats_adaptive += 1
 
 		if aux == 0:
 			self.count_port_stats_adaptive = 0
