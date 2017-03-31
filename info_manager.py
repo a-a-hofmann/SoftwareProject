@@ -10,6 +10,8 @@ MIN_WORKLOAD = 0.1
 SC_THRESHOLD = 5
 ALR_1_THRESHOLD = 10
 
+dirty = False
+
 class informationManager():
 
 	hosts = []
@@ -18,15 +20,30 @@ class informationManager():
 
 	all_active_paths = defaultdict(lambda: defaultdict(set))
 
-	def get_all_hosts_paths(self):
-		for host in self.hosts:
-			for path in host.path_list:
-				src, dst = path.path[0], path.path[-1]
-				self.all_active_paths[src][dst].add(tuple(path.path))
+	def get_all_active_paths(self):
+		global dirty
+		print "Is dirty or not? {}".format(dirty)
+		if dirty:
+			print "Dirty, rebuilding cache"
+			self.all_active_paths = defaultdict(lambda: defaultdict(set))
+			for host in self.hosts:
+				if not host.is_sink:
+					for path in host.path_list:
+						src, dst = path.path[0], path.path[-1]
+						self.all_active_paths[src][dst].add(path)
+			dirty = False
 
-		for src in self.all_active_paths:
-			for dst in self.all_active_paths[src]:
-				print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
+			for src in self.all_active_paths:
+				for dst in self.all_active_paths[src]:
+					print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
+
+			return self.all_active_paths
+		else:
+			print "Using cached"
+			for src in self.all_active_paths:
+				for dst in self.all_active_paths[src]:
+					print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
+			return self.all_active_paths
 
 
 	def get_most_efficient_path(self, G, src, dst):
@@ -165,6 +182,9 @@ class informationManager():
 
 			snk1 = create_host(27,5, EthAddr("00:00:00:00:00:17"),IPAddr("10.0.0.5"), True)
 			snk2 = create_host(2,5, EthAddr("00:00:00:00:00:18"),IPAddr("10.0.0.6"), True)
+
+			global dirty
+			dirty = True
 		else:
 			print "***** PLEASE, SPECIFY SPECIFY THE TOPOLOGY USER INTERFACE USING THE PARAMETER '--topo='\nE.g., --topo=fb or --topo=rnp"
 
@@ -345,6 +365,10 @@ class informationManager():
 
 			p = self.Path(src_dpid, src_port, dst_dpid, dst_port, p)
 			self.path_list.append(p)
+
+			global dirty
+			dirty = True
+			print "Setting flag to Dirty"
 			return p
 
 
@@ -367,6 +391,9 @@ class informationManager():
 				path = self.get_path(src_dpid, dst_dpid)
 			if path:
 				self.path_list.remove(path)
+
+				global dirty
+				dirty = True
 				return True
 			else:
 				return False
@@ -375,6 +402,9 @@ class informationManager():
 		def remove_path(self, path):
 			if path in self.path_list:
 				self.path_list.remove(path)
+
+				global dirty
+				dirty = True
 				return True
 			else:
 				return False
@@ -399,6 +429,9 @@ class informationManager():
 			def set_power_consumption(self, power_consumption):
 				self.power_consumption = power_consumption
 				self.total_consumption = sum(power_consumption.values())
+
+			def __str__(self):
+				return self.path
 
 
 		def set_netw_tokens(self, ntokens, nrenewals):

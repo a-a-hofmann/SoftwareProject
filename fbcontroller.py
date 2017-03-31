@@ -79,7 +79,19 @@ class Forwarding(object):
 		print "\nIterating over hosts and computing most efficient paths"
 		print "---------------\n"
 
-		info_manager.get_all_hosts_paths()
+		all_active_paths = info_manager.get_all_active_paths()
+		for src in all_active_paths:
+			for dst in all_active_paths:
+				src_dst_paths = all_active_paths[src][dst]
+				if len(src_dst_paths) > 1:
+					"There are multiple paths between the same src and dst active"
+					pass
+				else:
+					"There is only one path active, load balance if needed."
+					pass
+
+
+
 
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
