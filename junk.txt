@@ -1,0 +1,3178 @@
+POX 0.3.0 (dart) / Copyright 2011-2014 James McCauley, et al.
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+---------------
+
+POX> 
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+---------------
+
+All paths [(21, 13, 7, 2), (21, 13, 5, 2), (21, 14, 5, 2), (21, 14, 7, 2)]
+All paths: [21, 2]
+Path 1 (21, 13, 7, 2) 0.48
+Path 2 (21, 13, 5, 2) 0.48
+Path 3 (21, 14, 5, 2) 0.48
+Path 4 (21, 14, 7, 2) 0.48
+---
+Minimal path:  (21, 13, 7, 2)
+Minimal Path consumption: 0.48
+Setting flag to Dirty
+All paths [(2, 5, 13, 21), (2, 7, 13, 21), (2, 7, 14, 21), (2, 5, 14, 21)]
+All paths: [2, 21]
+Path 1 (2, 5, 13, 21) 0.48
+Path 2 (2, 7, 13, 21) 0.48
+Path 3 (2, 7, 14, 21) 0.48
+Path 4 (2, 5, 14, 21) 0.48
+---
+Minimal path:  (2, 5, 13, 21)
+Minimal Path consumption: 0.48
+Setting flag to Dirty
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? False
+Using cached
+2-2:	set([])
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+21-21:	set([])
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.6 ------
+---------------
+
+All paths [(21, 13, 7, 2), (21, 13, 5, 2), (21, 14, 5, 2), (21, 14, 7, 2)]
+All paths: [21, 2]
+Path 1 (21, 13, 7, 2) 3.0198668162
+Path 2 (21, 13, 5, 2) 3.10529289246
+Path 3 (21, 14, 5, 2) 2.47031445821
+Path 4 (21, 14, 7, 2) 2.38488838196
+---
+Minimal path:  (21, 14, 7, 2)
+Minimal Path consumption: 2.38488838196
+Setting flag to Dirty
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 14, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 14, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 5, 13, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 13, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+Merging all traffic into one path:	(21, 13, 7, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 13, 7, 2) to (21, 14, 5, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 13, 7, 2) to (21, 14, 5, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 7, 13, 21) to (2, 5, 14, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+Splitting traffic from (2, 5, 14, 21) to (2, 7, 13, 21)
+Setting flag to Dirty
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.6 ------
+---------------
+
+All paths [(21, 13, 7, 2), (21, 13, 5, 2), (21, 14, 5, 2), (21, 14, 7, 2)]
+All paths: [21, 2]
+Path 1 (21, 13, 7, 2) 1.11305812836
+Path 2 (21, 13, 5, 2) 1.26994043986
+Path 3 (21, 14, 5, 2) 1.42535238902
+Path 4 (21, 14, 7, 2) 1.26847007751
+---
+Minimal path:  (21, 13, 7, 2)
+Minimal Path consumption: 1.11305812836
+Setting flag to Dirty
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5, (2, 5, 14, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(2, 7, 13, 21)
+	(2, 5, 14, 21)
+Merging all traffic into one path:	(2, 7, 13, 21)
+Setting flag to Dirty
+Setting flag to Dirty
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+----- Host 10.0.0.2 ------
+----- Host 10.0.0.3 ------
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+Setting flag to Dirty
+----- Host 10.0.0.1 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.2 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.3 ------
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+Splitting traffic from (21, 14, 5, 2) to (21, 13, 7, 2)
+Setting flag to Dirty
+----- Host 10.0.0.6 ------
+---------------
+
+
+Iterating over hosts and computing most efficient paths
+---------------
+
+Is dirty or not? True
+Dirty, rebuilding cache
+2-21:	set([(2, 7, 13, 21), src_dpid=2, src_port=5, dst_dpid=21, dst_port=5])
+21-2:	set([(21, 14, 5, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=7, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 13, 7, 2), src_dpid=21, src_port=6, dst_dpid=2, dst_port=5, (21, 14, 5, 2), src_dpid=21, src_port=5, dst_dpid=2, dst_port=5])
+Merging all traffic from paths:
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+	(21, 13, 7, 2)
+	(21, 14, 5, 2)
+Merging all traffic into one path:	(21, 14, 5, 2)
+Setting flag to Dirty
+Task <Timer/tid4> caused exception and was de-scheduled
