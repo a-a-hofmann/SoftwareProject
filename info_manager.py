@@ -30,7 +30,8 @@ class informationManager():
 				if not host.is_sink:
 					for path in host.path_list:
 						src, dst = path.path[0], path.path[-1]
-						self.all_active_paths[src][dst].add(path)
+						if src != dst:
+							self.all_active_paths[src][dst].add(path)
 			dirty = False
 
 			for src in self.all_active_paths:
@@ -279,6 +280,12 @@ class informationManager():
 
 		return to_kw(consumption)
 
+	def get_hosts_from_path(self, path):
+		src_dpid, src_port = path.src_dpid, path.src_port
+		dst_dpid, dst_port = path.dst_dpid, path.dst_port
+		src_host = self.get_host(dpid=src_dpid, port=src_port)
+		dst_host = self.get_host(dpid=dst_dpid, port=dst_port)
+		return src_host, dst_host
 
 	class Host(object):
 
@@ -359,6 +366,15 @@ class informationManager():
 			self.is_sink = False
 			self.loss = []
 
+
+		def __repr__(self):
+			return "Ip = {}\tdpid = {}\tport = {}".format(self.ipaddr, self.dpid, self.port)
+
+
+		def __str__(self):
+			return self.__repr__()
+			
+
 		def create_path (self, src, dst, p):
 			src_dpid, src_port = src.dpid, src.port
 			dst_dpid, dst_port = dst.dpid, dst.port
@@ -420,6 +436,24 @@ class informationManager():
 				self.path = path
 				self.power_consumption = dict((dpid,0) for dpid in path)
 				self.total_consumption = 0.0
+
+
+			def __repr__(self):
+				return "" + str(self.path) + ", src_dpid=" + str(self.src_dpid) + \
+				", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
+				", dst_port=" + str(self.dst_port)
+
+
+			def __eq__(self, other):
+				if self is other:
+					return True
+				return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
+				and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
+				and self.path == other.path
+
+
+			def __hash__(self):
+				return hash(self.__repr__())
 
 
 			def set_total_consumption(self, consumption):

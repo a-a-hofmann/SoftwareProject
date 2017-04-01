@@ -84,59 +84,93 @@ class Forwarding(object):
 			for dst in all_active_paths:
 				src_dst_paths = all_active_paths[src][dst]
 				if len(src_dst_paths) > 1:
-					"There are multiple paths between the same src and dst active"
+					"There are multiple paths between the same src and dst active. Check if can merge"
+					self.check_if_can_merge(src_dst_paths)
 					pass
-				else:
-					"There is only one path active, load balance if needed."
-					pass
-
-
 
 
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
 				for path in host.path_list:
-					self.check_path(host, path)
+					#self.check_path(host, path)
+					self.check_if_should_split(host, path)
 
 		print "---------------\n"
 
 
-	def check_path(self, host, current_path):
-		"""
-		For a given path check if there is a more efficient one to destination.
-		Args:
-			host: Host.
-			current_path: Current host's path.
-		"""
+	def check_if_can_merge(self, paths):
+		"Just use the first path in paths"
+		new_path = list(paths)[0].path
 
-		print "Current path: {}".format(current_path.path)
-		src_dpid, src_port = current_path.src_dpid, current_path.src_port
-		dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
+		print "Merging all traffic from paths:"
+		for path in paths:
+			print "\t{}".format(path.path)
 
-		node_consumptions, node_workloads = info_manager.compute_path_information(current_path.path)
-		current_path.set_power_consumption(node_consumptions)
-		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
+		print "Merging all traffic into one path:\t{}".format(new_path)
+		for path in paths:
+			"Extract src and dst info from all paths"
+			src_host, dst_host = info_manager.get_hosts_from_path(path)
+			self.modify_path_rules(new_path, src_host, dst_host, is_split=False)
+			src_host.create_path(src_host, dst_host, new_path)
+			src_host.remove_path(path)
 
+
+	def check_if_should_split(self, host, path):
+		"There is a single path, check if overloaded"
+		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path.path)
 		if overloaded_nodes:
-			new_path = self.get_path_for_load_balancing(src_dpid, dst_dpid, current_path, overloaded_nodes)
-
+			new_path = self.get_path_for_load_balancing(path.src_dpid, path.dst_dpid, path, overloaded_nodes)
 			if new_path:
 				"""If there is a new path then reroute traffic.
 				Otherwise all other paths are overloaded as well, do nothing"""
-				src_host = info_manager.get_host(dpid=src_dpid, port=src_port)
-				dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
-
+				print "Splitting traffic from {} to {}".format(path.path, new_path)
+				src_host, dst_host = info_manager.get_hosts_from_path(path)
 				new_path = host.create_path(src_host, dst_host, new_path)
 
-				# succededRemovingPath = host.remove_path(current_path)
-				# assert succededRemovingPath
 				"Load balance"
-				self.modify_path_rules(new_path.path, src_host, dst_host, current_path.path)
+				self.modify_path_rules(new_path.path, src_host, dst_host, is_split = True)
 
-				node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
-				path_consumption = sum(node_consumption_new_path.itervalues())
-				new_path.set_power_consumption(node_consumption_new_path)
+				# node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
+				# path_consumption = sum(node_consumption_new_path.itervalues())
+				# new_path.set_power_consumption(node_consumption_new_path)
+
+
+	# def check_path(self, host, current_path):
+	# 	"""
+	# 	For a given path check if there is a more efficient one to destination.
+	# 	Args:
+	# 		host: Host.
+	# 		current_path: Current host's path.
+	# 	"""
+
+	# 	print "Current path: {}".format(current_path.path)
+	# 	src_dpid, src_port = current_path.src_dpid, current_path.src_port
+	# 	dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
+
+	# 	node_consumptions, node_workloads = info_manager.compute_path_information(current_path.path)
+	# 	current_path.set_power_consumption(node_consumptions)
+	# 	overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
+
+	# 	if overloaded_nodes:
+	# 		new_path = self.get_path_for_load_balancing(src_dpid, dst_dpid, current_path, overloaded_nodes)
+
+	# 		if new_path:
+	# 			"""If there is a new path then reroute traffic.
+	# 			Otherwise all other paths are overloaded as well, do nothing"""
+	# 			src_host = info_manager.get_host(dpid=src_dpid, port=src_port)
+	# 			dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
+
+	# 			new_path = host.create_path(src_host, dst_host, new_path)
+
+	# 			# succededRemovingPath = host.remove_path(current_path)
+	# 			# assert succededRemovingPath
+	# 			"Load balance"
+	# 			self.modify_path_rules(new_path.path, src_host, dst_host, current_path.path)
+
+	# 			node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
+	# 			path_consumption = sum(node_consumption_new_path.itervalues())
+	# 			new_path.set_power_consumption(node_consumption_new_path)
 
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
@@ -145,7 +179,7 @@ class Forwarding(object):
 		Args:
 			src: Source node dpid.
 			dst: Destination node dpid.
-			current_path: Current path as list of node dpids.
+			current_path: Current path as Path obj.
 			overloaded_nodes: which nodes are overloaded in the current path.
 		Returns:
 		 	candidate: new path or None if no path was found.
@@ -195,14 +229,15 @@ class Forwarding(object):
 		return overloaded_nodes
 
 
-	def modify_path_rules(self, new_path, src_host, dst_host, path_to_split=None):
+	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
 
-		print "There is a more efficient path, rerouting to: {}".format(new_path)
-		"modify routing rules for each node in new path"
+		# print "There is a more efficient path, rerouting to: {}".format(new_path)
+		# "modify routing rules for each node in new path"
 
-		if path_to_split:
+		if is_split:
 			msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
 		else:
+			"Is merging paths"
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY_STRICT)
 
 		msg.match.dl_type = ethernet.IP_TYPE
@@ -211,7 +246,9 @@ class Forwarding(object):
 		for index, node_dpid in enumerate(new_path):
 
 			"first node in the path"
-			if node_dpid == src_host.dpid:
+			if node_dpid == src_host.dpid and src_host:
+				"""if no src host was specified all traffic passing through
+				this switch will follow the same path"""
 				msg.match.nw_src = src_host.ipaddr
 
 			if index + 1 < len(new_path):
