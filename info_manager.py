@@ -4,6 +4,7 @@ from pox.lib.addresses import IPAddr,EthAddr
 from update_database import *
 import networkx as nx
 from path_table import PathTable
+from path import Path
 
 
 MIN_WORKLOAD = 0.1
@@ -21,30 +22,32 @@ class informationManager():
 	all_active_paths = defaultdict(lambda: defaultdict(set))
 
 	def get_all_active_paths(self):
-		global dirty
-		print "Is dirty or not? {}".format(dirty)
-		if dirty:
-			print "Dirty, rebuilding cache"
-			self.all_active_paths = defaultdict(lambda: defaultdict(set))
-			for host in self.hosts:
-				if not host.is_sink:
-					for path in host.path_list:
-						src, dst = path.path[0], path.path[-1]
-						if src != dst:
-							self.all_active_paths[src][dst].add(path)
-			dirty = False
+		self.path_table.print_active_paths()
+		return self.path_table.get_active_paths()
+		# global dirty
+		# print "Is dirty or not? {}".format(dirty)
+		# if dirty:
+		# 	print "Dirty, rebuilding cache"
+		# 	self.all_active_paths = defaultdict(lambda: defaultdict(set))
+		# 	for host in self.hosts:
+		# 		if not host.is_sink:
+		# 			for path in host.path_list:
+		# 				src, dst = path.path[0], path.path[-1]
+		# 				if src != dst:
+		# 					self.all_active_paths[src][dst].add(path)
+		# 	dirty = False
+		#
+		# 	for src in self.all_active_paths:
+		# 		for dst in self.all_active_paths[src]:
+		# 			print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
 
-			for src in self.all_active_paths:
-				for dst in self.all_active_paths[src]:
-					print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
-
-			return self.all_active_paths
-		else:
-			print "Using cached"
-			for src in self.all_active_paths:
-				for dst in self.all_active_paths[src]:
-					print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
-			return self.all_active_paths
+			# return self.all_active_paths
+		# else:
+		# 	print "Using cached"
+		# 	for src in self.all_active_paths:
+		# 		for dst in self.all_active_paths[src]:
+		# 			print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
+		# 	return self.all_active_paths
 
 
 	def get_most_efficient_path(self, G, src, dst):
@@ -52,23 +55,24 @@ class informationManager():
 		For a given source src and destination dst, compute the most energy efficient path.
 		Args:
 			G: graph.
-			src: source dpid.
-			dst: destination dpid.
+			src: source obj.
+			dst: destination obj.
 		Returns:
 			path_consumption: consumption of the path as a whole.
 			node_consumptions: dict of node dpids and node consumption
 		"""
 		all_paths = self.all_paths(G, src, dst)
-		print "All paths {}".format(all_paths)
-		all_paths_consumptions = [sum(self.compute_path_information(path)[0].itervalues()) for path in all_paths]
+		all_paths_consumptions = [sum(self.compute_path_information(path.path)[0].itervalues()) for path in all_paths]
 
-		print "All paths: [{}, {}]".format(src, dst)
-		i = 1
-		for path in all_paths:
-			print "Path {}".format(i), path, all_paths_consumptions[i - 1]
-			i += 1
-
-		print "---"
+		#print "All paths: [{}, {}]".format(src, dst)
+		# print "\n\n"
+		# i = 1
+		# for path in all_paths:
+		# 	print "Path {}".format(i)
+		# 	print path
+		# 	print all_paths_consumptions[i - 1], "\n\n"
+		# 	i += 1
+		#print "---"
 
 		minimal_path = min(all_paths_consumptions)
 		minimal_path_index = all_paths_consumptions.index(minimal_path)
@@ -82,19 +86,22 @@ class informationManager():
 		For a given source src and destination dst, compute all shortest paths.
 		Args:
 			G: graph.
-			src: source dpid.
-			dst: destination dpid.
+			src: source obj.
+			dst: destination obj.
 		Returns:
 			list of all paths between src and dst.
 		"""
+		print "computing all paths between {}-{}".format(src, dst)
 		if self.path_table.has_path(src, dst):
 			"Using cached path"
-			return self.path_table.get_path(src, dst)
+			return [p.path for p in self.path_table.get_path(src.dpid, dst.dpid)]
 		else:
 			"Compute and cache new path"
-			for path in nx.all_shortest_paths(G, src, dst):
-				self.path_table.put_path(tuple(path), src, dst)
-			return self.path_table.get_path(src, dst)
+			for path in nx.all_shortest_paths(G, src.dpid, dst.dpid):
+				pathObj = Path.of(src, dst, path)
+				self.path_table.put_path(pathObj, src.dpid, dst.dpid)
+
+			return self.path_table.get_path(src.dpid, dst.dpid)
 
 
 	def compute_path_information(self, path):
@@ -373,13 +380,15 @@ class informationManager():
 
 		def __str__(self):
 			return self.__repr__()
-			
 
-		def create_path (self, src, dst, p):
+
+		def create_path (self, src, dst, p, is_active = False):
 			src_dpid, src_port = src.dpid, src.port
 			dst_dpid, dst_port = dst.dpid, dst.port
 
-			p = self.Path(src_dpid, src_port, dst_dpid, dst_port, p)
+			p = Path(src_dpid, src_port, dst_dpid, dst_port, p)
+			p.is_active = is_active
+
 			self.path_list.append(p)
 
 			global dirty
@@ -426,46 +435,46 @@ class informationManager():
 				return False
 
 
-		class Path(object):
-			workload = 0.0
-			def __init__(self, src_dpid, src_port, dst_dpid, dst_port, path):
-				self.src_dpid = src_dpid
-				self.src_port = src_port
-				self.dst_dpid = dst_dpid
-				self.dst_port = dst_port
-				self.path = path
-				self.power_consumption = dict((dpid,0) for dpid in path)
-				self.total_consumption = 0.0
-
-
-			def __repr__(self):
-				return "" + str(self.path) + ", src_dpid=" + str(self.src_dpid) + \
-				", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
-				", dst_port=" + str(self.dst_port)
-
-
-			def __eq__(self, other):
-				if self is other:
-					return True
-				return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
-				and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
-				and self.path == other.path
-
-
-			def __hash__(self):
-				return hash(self.__repr__())
-
-
-			def set_total_consumption(self, consumption):
-				self.total_consumption = consumption
-
-
-			def set_power_consumption(self, power_consumption):
-				self.power_consumption = power_consumption
-				self.total_consumption = sum(power_consumption.values())
-
-			def __str__(self):
-				return self.path
+		# class Path(object):
+		# 	workload = 0.0
+		# 	def __init__(self, src_dpid, src_port, dst_dpid, dst_port, path):
+		# 		self.src_dpid = src_dpid
+		# 		self.src_port = src_port
+		# 		self.dst_dpid = dst_dpid
+		# 		self.dst_port = dst_port
+		# 		self.path = path
+		# 		self.power_consumption = dict((dpid,0) for dpid in path)
+		# 		self.total_consumption = 0.0
+		#
+		#
+		# 	def __repr__(self):
+		# 		return "" + str(self.path) + ", src_dpid=" + str(self.src_dpid) + \
+		# 		", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
+		# 		", dst_port=" + str(self.dst_port)
+		#
+		#
+		# 	def __eq__(self, other):
+		# 		if self is other:
+		# 			return True
+		# 		return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
+		# 		and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
+		# 		and self.path == other.path
+		#
+		#
+		# 	def __hash__(self):
+		# 		return hash(self.__repr__())
+		#
+		#
+		# 	def set_total_consumption(self, consumption):
+		# 		self.total_consumption = consumption
+		#
+		#
+		# 	def set_power_consumption(self, power_consumption):
+		# 		self.power_consumption = power_consumption
+		# 		self.total_consumption = sum(power_consumption.values())
+		#
+		# 	def __str__(self):
+		# 		return self.path
 
 
 		def set_netw_tokens(self, ntokens, nrenewals):

@@ -22,8 +22,9 @@ import networkx as nx
 from info_manager import *
 from update_database import *
 from path_table import PathTable
+from path import Path
 
-import matplotlib.pyplot as plt
+import traceback, sys
 
 info_manager = informationManager()
 
@@ -37,7 +38,7 @@ class Forwarding(object):
 	"""
 
 	CONSUMPTION_THRESHOLD = 10
-	LB_THRESHOLD = 10
+	LB_THRESHOLD = 1
 
 	def __init__(self, G):
 		# Network Graph
@@ -57,17 +58,20 @@ class Forwarding(object):
 		Args:
 			G: networkx graph containing the topology of the network.
 		"""
-		host_ids = set(host.dpid for host in info_manager.hosts)
-		host_combinations = itertools.combinations(host_ids, 2)
+		#host_ids = set(host.dpid for host in info_manager.hosts)
+		host_combinations = itertools.combinations(info_manager.hosts, 2)
 
 		for src, dst in host_combinations:
-			paths_generator = nx.all_shortest_paths(self.G, src, dst)
+			paths_generator = nx.all_shortest_paths(self.G, src.dpid, dst.dpid)
 
 			counter = 0
 			for path in paths_generator:
 				if counter > PATH_LIMIT:
 					break
-				info_manager.path_table.put_path(path = tuple(paths_generator.next()), src = src, dst = dst)
+
+				#path = info_manager.Path(src_dpid, src_port, dst_dpid, dst_port, path)
+				path = Path(src.dpid, src.port, dst.dpid, dst.port, path)
+				info_manager.path_table.put_path(path = path, src = src.dpid, dst = dst.dpid)
 
 
 	def paths(self):
@@ -80,10 +84,12 @@ class Forwarding(object):
 		print "---------------\n"
 
 		all_active_paths = info_manager.get_all_active_paths()
+		#print info_manager.path_table
+
 		for src in all_active_paths:
 			for dst in all_active_paths:
 				src_dst_paths = all_active_paths[src][dst]
-				if len(src_dst_paths) > 1:
+				if len(src_dst_paths) > 1 and len(set(tuple(path.path) for path in src_dst_paths)) > 1:
 					"There are multiple paths between the same src and dst active. Check if can merge"
 					self.check_if_can_merge(src_dst_paths)
 					pass
@@ -93,7 +99,6 @@ class Forwarding(object):
 			if host.path_list and not host.is_sink:
 				print "----- Host {} ------".format(host.ipaddr)
 				for path in host.path_list:
-					#self.check_path(host, path)
 					self.check_if_should_split(host, path)
 
 		print "---------------\n"
@@ -112,21 +117,31 @@ class Forwarding(object):
 			"Extract src and dst info from all paths"
 			src_host, dst_host = info_manager.get_hosts_from_path(path)
 			self.modify_path_rules(new_path, src_host, dst_host, is_split=False)
-			src_host.create_path(src_host, dst_host, new_path)
+			src_host.create_path(src_host, dst_host, new_path, is_active = True)
 			src_host.remove_path(path)
+			path.is_active = False
 
 
 	def check_if_should_split(self, host, path):
 		"There is a single path, check if overloaded"
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path.path)
+		print "Checking if should split {}".format(path.path)
 		if overloaded_nodes:
-			new_path = self.get_path_for_load_balancing(path.src_dpid, path.dst_dpid, path, overloaded_nodes)
+			src_host, dst_host = info_manager.get_hosts_from_path(path)
+			new_path = self.get_path_for_load_balancing(src_host, dst_host, path, overloaded_nodes)
+			print "Has overloaded nodes!"
 			if new_path:
 				"""If there is a new path then reroute traffic.
 				Otherwise all other paths are overloaded as well, do nothing"""
-				print "Splitting traffic from {} to {}".format(path.path, new_path)
-				src_host, dst_host = info_manager.get_hosts_from_path(path)
-				new_path = host.create_path(src_host, dst_host, new_path)
+				print "Splitting traffic from {} to {}".format(path, new_path)
+				#new_path = host.create_path(src_host, dst_host, new_path.path, is_active = True)
+				host.path_list.append(new_path)
+				info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, new_path)
+
+				info_manager.path_table.print_active_paths()
+
+				print "------------------------------------------------"
+				#info_manager.path_table.put_path(new_path, src_host.dpid, dst_host.dpid)
 
 				"Load balance"
 				self.modify_path_rules(new_path.path, src_host, dst_host, is_split = True)
@@ -186,16 +201,15 @@ class Forwarding(object):
 		"""
 
 		all_paths = info_manager.all_paths(self.G, src, dst)
-		all_paths.remove(current_path.path)
 		current_path_consumption = current_path.total_consumption
 
 		candidates = []
 		for candidate in all_paths:
-			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate)
+			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate.path)
 
-			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
+			if not overloaded and not any(item[0] in candidate.path for item in overloaded_nodes):
 				"Choose as candidate only if it isn't overloaded as well."
-				candidate_path_consumption = sum(info_manager.compute_path_information(candidate)[0].itervalues())
+				candidate_path_consumption = sum(info_manager.compute_path_information(candidate.path)[0].itervalues())
 				if current_path_consumption + candidate_path_consumption < self.CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
 
@@ -334,17 +348,41 @@ class Forwarding(object):
 			if not info_manager.get_host(dpid = dpid, port = port):
 				info_manager.hosts.append(info_manager.Host(dpid, port, src_mac, src_ip))
 			try:
-				path = src_host.get_path(src_host.dpid, dst_host.dpid).path
+				path = src_host.get_path(src_host.dpid, dst_host.dpid)
+				path_list = path.path
+				print "Put path in try statement {}".format(path_list)
+				info_manager.path_table.put_path(path)
+				path = path.path
 			except:
 				try:
-					path = info_manager.get_most_efficient_path(self.G, src_host.dpid, dst_host.dpid)
-					# path = nx.shortest_path(self.G, src_host.dpid, dst_host.dpid)
-					src_host.create_path(src_host, dst_host, path)
+					#path = info_manager.get_most_efficient_path(self.G, src_host, dst_host)
+					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
+						print "Has active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
+						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
+						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
+						info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
+					else:
+						print "No active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
+						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
+						print "Path retrieved from info manager {}".format(path)
+						path.is_active = True
+						info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
+						#path = Path.of(src_host, dst_host, path.path)
+
+					path.is_active = True
+					src_host.path_list.append(path)
+					print "-----\nNew path for src dst {} {}\t:{}".format(src_host.ipaddr, dst_host.ipaddr, path)
+					path = path.path
 				except Exception as e:
 					print repr(e)
+					print '-'*60
+					traceback.print_exc(file=sys.stdout)
+					print '-'*60
 					return EventHalt
 		else:
-			path = src_host.get_path(src_host.dpid, dst_host.dpid).path
+			path = src_host.get_path(src_host.dpid, dst_host.dpid)
+			path.is_active = True
+			path = path.path
 
 		if dpid not in path:
 			return EventHalt
