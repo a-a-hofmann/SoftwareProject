@@ -58,7 +58,6 @@ class Forwarding(object):
 		Args:
 			G: networkx graph containing the topology of the network.
 		"""
-		#host_ids = set(host.dpid for host in info_manager.hosts)
 		host_combinations = itertools.combinations(info_manager.hosts, 2)
 
 		for src, dst in host_combinations:
@@ -69,7 +68,6 @@ class Forwarding(object):
 				if counter > PATH_LIMIT:
 					break
 
-				#path = info_manager.Path(src_dpid, src_port, dst_dpid, dst_port, path)
 				path = Path(src.dpid, src.port, dst.dpid, dst.port, path)
 				info_manager.path_table.put_path(path = path, src = src.dpid, dst = dst.dpid)
 
@@ -140,54 +138,10 @@ class Forwarding(object):
 					host.path_list.append(new_path)
 				new_path.is_active = True
 
-				#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, new_path.pat)
-
 				print "------------------------------------------------"
-				#info_manager.path_table.put_path(new_path, src_host.dpid, dst_host.dpid)
 
 				"Load balance"
 				self.modify_path_rules(new_path.path, src_host, dst_host, is_split = True)
-
-				# node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
-				# path_consumption = sum(node_consumption_new_path.itervalues())
-				# new_path.set_power_consumption(node_consumption_new_path)
-
-
-	# def check_path(self, host, current_path):
-	# 	"""
-	# 	For a given path check if there is a more efficient one to destination.
-	# 	Args:
-	# 		host: Host.
-	# 		current_path: Current host's path.
-	# 	"""
-
-	# 	print "Current path: {}".format(current_path.path)
-	# 	src_dpid, src_port = current_path.src_dpid, current_path.src_port
-	# 	dst_dpid, dst_port = current_path.dst_dpid, current_path.dst_port
-
-	# 	node_consumptions, node_workloads = info_manager.compute_path_information(current_path.path)
-	# 	current_path.set_power_consumption(node_consumptions)
-	# 	overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(workloads=node_workloads, path=current_path.path)
-
-	# 	if overloaded_nodes:
-	# 		new_path = self.get_path_for_load_balancing(src_dpid, dst_dpid, current_path, overloaded_nodes)
-
-	# 		if new_path:
-	# 			"""If there is a new path then reroute traffic.
-	# 			Otherwise all other paths are overloaded as well, do nothing"""
-	# 			src_host = info_manager.get_host(dpid=src_dpid, port=src_port)
-	# 			dst_host = info_manager.get_host(dpid=dst_dpid, port=dst_port)
-
-	# 			new_path = host.create_path(src_host, dst_host, new_path)
-
-	# 			# succededRemovingPath = host.remove_path(current_path)
-	# 			# assert succededRemovingPath
-	# 			"Load balance"
-	# 			self.modify_path_rules(new_path.path, src_host, dst_host, current_path.path)
-
-	# 			node_consumption_new_path = info_manager.compute_path_information(new_path.path)[0]
-	# 			path_consumption = sum(node_consumption_new_path.itervalues())
-	# 			new_path.set_power_consumption(node_consumption_new_path)
 
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
@@ -247,10 +201,6 @@ class Forwarding(object):
 
 
 	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
-
-		# print "There is a more efficient path, rerouting to: {}".format(new_path)
-		# "modify routing rules for each node in new path"
-
 		if is_split:
 			msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
 		else:
@@ -363,14 +313,10 @@ class Forwarding(object):
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
 						print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
-						#info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
-						#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
 					else:
 						print "No active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
 						print "Path retrieved from info manager {}".format(path)
-						#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
-						#path = Path.of(src_host, dst_host, path.path)
 
 					path.is_active = True
 					if not path in src_host.path_list:

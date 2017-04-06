@@ -437,48 +437,6 @@ class informationManager():
 				return False
 
 
-		# class Path(object):
-		# 	workload = 0.0
-		# 	def __init__(self, src_dpid, src_port, dst_dpid, dst_port, path):
-		# 		self.src_dpid = src_dpid
-		# 		self.src_port = src_port
-		# 		self.dst_dpid = dst_dpid
-		# 		self.dst_port = dst_port
-		# 		self.path = path
-		# 		self.power_consumption = dict((dpid,0) for dpid in path)
-		# 		self.total_consumption = 0.0
-		#
-		#
-		# 	def __repr__(self):
-		# 		return "" + str(self.path) + ", src_dpid=" + str(self.src_dpid) + \
-		# 		", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
-		# 		", dst_port=" + str(self.dst_port)
-		#
-		#
-		# 	def __eq__(self, other):
-		# 		if self is other:
-		# 			return True
-		# 		return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
-		# 		and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
-		# 		and self.path == other.path
-		#
-		#
-		# 	def __hash__(self):
-		# 		return hash(self.__repr__())
-		#
-		#
-		# 	def set_total_consumption(self, consumption):
-		# 		self.total_consumption = consumption
-		#
-		#
-		# 	def set_power_consumption(self, power_consumption):
-		# 		self.power_consumption = power_consumption
-		# 		self.total_consumption = sum(power_consumption.values())
-		#
-		# 	def __str__(self):
-		# 		return self.path
-
-
 		def set_netw_tokens(self, ntokens, nrenewals):
 			assert ntokens > 0
 			self.netw_tokens.tokens = ntokens
