@@ -24,30 +24,6 @@ class informationManager():
 	def get_all_active_paths(self):
 		self.path_table.print_active_paths()
 		return self.path_table.get_active_paths()
-		# global dirty
-		# print "Is dirty or not? {}".format(dirty)
-		# if dirty:
-		# 	print "Dirty, rebuilding cache"
-		# 	self.all_active_paths = defaultdict(lambda: defaultdict(set))
-		# 	for host in self.hosts:
-		# 		if not host.is_sink:
-		# 			for path in host.path_list:
-		# 				src, dst = path.path[0], path.path[-1]
-		# 				if src != dst:
-		# 					self.all_active_paths[src][dst].add(path)
-		# 	dirty = False
-		#
-		# 	for src in self.all_active_paths:
-		# 		for dst in self.all_active_paths[src]:
-		# 			print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
-
-			# return self.all_active_paths
-		# else:
-		# 	print "Using cached"
-		# 	for src in self.all_active_paths:
-		# 		for dst in self.all_active_paths[src]:
-		# 			print "{}-{}:\t{}".format(src, dst, self.all_active_paths[src][dst])
-		# 	return self.all_active_paths
 
 
 	def get_most_efficient_path(self, G, src, dst):
@@ -63,16 +39,6 @@ class informationManager():
 		"""
 		all_paths = self.all_paths(G, src, dst)
 		all_paths_consumptions = [sum(self.compute_path_information(path.path)[0].itervalues()) for path in all_paths]
-
-		#print "All paths: [{}, {}]".format(src, dst)
-		# print "\n\n"
-		# i = 1
-		# for path in all_paths:
-		# 	print "Path {}".format(i)
-		# 	print path
-		# 	print all_paths_consumptions[i - 1], "\n\n"
-		# 	i += 1
-		#print "---"
 
 		minimal_path = min(all_paths_consumptions)
 		minimal_path_index = all_paths_consumptions.index(minimal_path)
