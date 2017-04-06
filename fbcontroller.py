@@ -84,16 +84,15 @@ class Forwarding(object):
 		print "---------------\n"
 
 		all_active_paths = info_manager.get_all_active_paths()
-		#print info_manager.path_table
 
 		for src in all_active_paths:
-			for dst in all_active_paths:
+			for dst in all_active_paths[src]:
 				src_dst_paths = all_active_paths[src][dst]
-				if len(src_dst_paths) > 1 and len(set(tuple(path.path) for path in src_dst_paths)) > 1:
-					"There are multiple paths between the same src and dst active. Check if can merge"
-					self.check_if_can_merge(src_dst_paths)
-					pass
-
+				if src_dst_paths:
+					print "Checking if can merge {}".format(src_dst_paths)
+					if len(src_dst_paths) > 1 and len(set(tuple(path.path) for path in src_dst_paths)) > 1:
+						"There are multiple paths between the same src and dst active. Check if can merge"
+						self.check_if_can_merge(src_dst_paths)
 
 		for host in info_manager.hosts:
 			if host.path_list and not host.is_sink:
@@ -117,15 +116,17 @@ class Forwarding(object):
 			"Extract src and dst info from all paths"
 			src_host, dst_host = info_manager.get_hosts_from_path(path)
 			self.modify_path_rules(new_path, src_host, dst_host, is_split=False)
-			src_host.create_path(src_host, dst_host, new_path, is_active = True)
-			src_host.remove_path(path)
+
+			if not path in src_host.path_list:
+				src_host.create_path(src_host, dst_host, new_path, is_active = True)
+				src_host.remove_path(path)
 			path.is_active = False
 
 
 	def check_if_should_split(self, host, path):
 		"There is a single path, check if overloaded"
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path.path)
-		print "Checking if should split {}".format(path.path)
+		print "Checking if should split {}".format(path)
 		if overloaded_nodes:
 			src_host, dst_host = info_manager.get_hosts_from_path(path)
 			new_path = self.get_path_for_load_balancing(src_host, dst_host, path, overloaded_nodes)
@@ -135,10 +136,11 @@ class Forwarding(object):
 				Otherwise all other paths are overloaded as well, do nothing"""
 				print "Splitting traffic from {} to {}".format(path, new_path)
 				#new_path = host.create_path(src_host, dst_host, new_path.path, is_active = True)
-				host.path_list.append(new_path)
-				info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, new_path)
+				if not new_path in host.path_list:
+					host.path_list.append(new_path)
+				new_path.is_active = True
 
-				info_manager.path_table.print_active_paths()
+				#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, new_path.pat)
 
 				print "------------------------------------------------"
 				#info_manager.path_table.put_path(new_path, src_host.dpid, dst_host.dpid)
@@ -200,6 +202,7 @@ class Forwarding(object):
 		 	candidate: new path or None if no path was found.
 		"""
 
+		print "LB: Fetching paths for ({}, {})".format(src, dst)
 		all_paths = info_manager.all_paths(self.G, src, dst)
 		current_path_consumption = current_path.total_consumption
 
@@ -350,27 +353,28 @@ class Forwarding(object):
 			try:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
-				print "Put path in try statement {}".format(path_list)
-				info_manager.path_table.put_path(path)
+				if info_manager.path_table.has_path(path):
+					print "Put path in try statement {}".format(path)
+					info_manager.path_table.put_path(path)
 				path = path.path
 			except:
 				try:
 					#path = info_manager.get_most_efficient_path(self.G, src_host, dst_host)
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
-						print "Has active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
+						print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
-						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
-						info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
+						#info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
+						#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
 					else:
 						print "No active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
 						print "Path retrieved from info manager {}".format(path)
-						path.is_active = True
-						info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
+						#info_manager.path_table.set_path_active(src_host.dpid, dst_host.dpid, path.path)
 						#path = Path.of(src_host, dst_host, path.path)
 
 					path.is_active = True
-					src_host.path_list.append(path)
+					if not path in src_host.path_list:
+						src_host.path_list.append(path)
 					print "-----\nNew path for src dst {} {}\t:{}".format(src_host.ipaddr, dst_host.ipaddr, path)
 					path = path.path
 				except Exception as e:

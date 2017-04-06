@@ -24,8 +24,12 @@ class PathTable(object):
 
         if src in self.paths:
             return dst in self.paths[src]
+        elif dst in self.paths:
+            return src in self.paths[dst]
         elif src in self.reverse:
             return dst in self.reverse[src]
+        elif dst in self.reverse:
+            return src in self.reverse[dst]
         return False
 
 
@@ -39,10 +43,16 @@ class PathTable(object):
             path as list if exists, None otherwise
         """
         if src in self.paths:
-            return list(self.paths[src][dst])
+            if dst in self.paths[src]:
+                return list(self.paths[src][dst])
+
+            print "Warning: (Fwd get_path) returning empty path list for ({}, {})".format(src, dst)
         elif src in self.reverse:
-            return list(self.reverse[src][dst])
-        return None
+            if dst in self.reverse[src]:
+                return list(self.reverse[src][dst])
+
+        print "Warning: (Reverse get_path) returning empty path list for ({}, {})".format(src, dst)
+        return []
 
 
     def put_path(self, path, src=None, dst=None):
@@ -56,12 +66,14 @@ class PathTable(object):
             dst: destination id. If not supplied inferrs that path[-1] is dst. Defaults to None.
         """
 
-        if path and src != dst:
+        if path:
             if not src or not dst:
                 src, dst = path.path[0], path.path[-1]
 
-            self.paths[src][dst].add(path)
-            self.reverse[dst][src].add(path.reverse_path())
+            if src != dst:
+                print "\tInserting path:\t{}".format(path.path)
+                self.paths[src][dst].add(path)
+                self.reverse[dst][src].add(path.reverse_path())
         else:
             if src != dst:
                 print "Empty path received"
@@ -129,31 +141,22 @@ class PathTable(object):
 
 
     def set_path_active(self, src, dst, path):
-        if src in self.paths:
-            if dst in self.paths[src][dst]:
-                for p in self.paths[src][dst]:
-                    if p == path:
-                        p.is_active = True
-            else:
-                if src in self.reverse:
-                    if dst in self.reverse[src][dst]:
-                        for p in self.reverse[src][dst]:
-                            if p == path:
-                                p.is_active = True
-                    else:
-                        print "1 No path for given dst"
+        if src in self.paths and dst in self.paths[src]:
+            for p in self.paths[src][dst]:
+                if p.path == path:
+                    p.is_active = True
 
-                elif dst in self.reverse:
-                    if src in self.reverse[dst][src]:
-                        for p in self.reverse[dst][src]:
-                            if p == path:
-                                p.is_active = True
-                    else:
-                        print "1 No path for given src"
-                else:
-                    print "2 No path for given dst"
+        if src in self.reverse and dst in self.reverse[src]:
+            for p in self.reverse[src][dst]:
+                if p.path == path:
+                    p.is_active = True
+
+        if dst in self.reverse and src in self.reverse[dst]:
+            for p in self.reverse[dst][src]:
+                if p.path == path:
+                    p.is_active = True
         else:
-            print "3 no path for given src"
+            print "No path for given src"
 
 
     def __str__(self):
