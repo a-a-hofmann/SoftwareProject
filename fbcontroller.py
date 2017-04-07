@@ -23,6 +23,7 @@ from info_manager import *
 from update_database import *
 from path_table import PathTable
 from path import Path
+from clock import Clock
 
 import traceback, sys
 
@@ -30,24 +31,34 @@ info_manager = informationManager()
 
 main_gui = None
 PATH_REFRESH_RATE = 1
+CLOCK_TICK_RATE = 1
 PATH_LIMIT = 10
+PATH_MERGING_LIMIT = 3
 
 class Forwarding(object):
 	"""
 	Forwading controller.
 	"""
 
-	CONSUMPTION_THRESHOLD = 10
+	CONSUMPTION_THRESHOLD = 5
 	LB_THRESHOLD = 1
 
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
+		self.clock = Clock(20, 0, 0)
+		self.policies = {}
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
-		Timer(PATH_REFRESH_RATE, self.paths, recurring=True)
-		Timer(10, self.pre_compute_paths, args={G: G}, recurring=False)
+		Timer(CLOCK_TICK_RATE, self.refresh_time, recurring = True)
+		#Timer(PATH_REFRESH_RATE, self.paths, recurring = True)
+		#Timer(10, self.pre_compute_paths, args = {G: G}, recurring = False)
+
+
+	def refresh_time(self):
+		self.clock.tickMinutes()
+		print self.clock
 
 
 	def pre_compute_paths(self, G):
@@ -81,24 +92,33 @@ class Forwarding(object):
 		print "\nIterating over hosts and computing most efficient paths"
 		print "---------------\n"
 
-		all_active_paths = info_manager.get_all_active_paths()
-
-		for src in all_active_paths:
-			for dst in all_active_paths[src]:
-				src_dst_paths = all_active_paths[src][dst]
-				if src_dst_paths:
-					print "Checking if can merge {}".format(src_dst_paths)
-					if len(src_dst_paths) > 1 and len(set(tuple(path.path) for path in src_dst_paths)) > 1:
-						"There are multiple paths between the same src and dst active. Check if can merge"
-						self.check_if_can_merge(src_dst_paths)
-
-		for host in info_manager.hosts:
-			if host.path_list and not host.is_sink:
-				print "----- Host {} ------".format(host.ipaddr)
-				for path in host.path_list:
-					self.check_if_should_split(host, path)
+		# if self.clock.isEnergySavingsTime():
+		# 	all_active_paths = info_manager.get_all_active_paths()
+		# 	for src in all_active_paths:
+		# 		for dst in all_active_paths[src]:
+		# 			src_dst_paths = all_active_paths[src][dst]
+		# 			if src_dst_paths:
+		# 				print "Checking if can merge {}".format(src_dst_paths)
+		# 				if self.should_merge(src_dst_paths):
+		# 					"There are multiple paths between the same src and dst active. Check if can merge"
+		# 					self.check_if_can_merge(src_dst_paths)
+		# else:
+		# 	for host in info_manager.hosts:
+		# 		if host.path_list and not host.is_sink:
+		# 			print "----- Host {} ------".format(host.ipaddr)
+		# 			for path in host.path_list:
+		# 				self.check_if_should_split(host, path)
 
 		print "---------------\n"
+
+
+	def should_merge(self, paths):
+		"""
+			Returns true if there are multiple DISTINCT paths between the same src and dst.
+			For example if paths contains [Path([1, 2, 3], src1, dst), Path([1, 2, 3], src2, dst)],
+			this method will return False.
+		"""
+		return len(paths) > 1 and len(set(tuple(path.path) for path in paths)) > 1
 
 
 	def check_if_can_merge(self, paths):
@@ -314,7 +334,6 @@ class Forwarding(object):
 				path = path.path
 			except:
 				try:
-					#path = info_manager.get_most_efficient_path(self.G, src_host, dst_host)
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
 						print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
@@ -326,7 +345,6 @@ class Forwarding(object):
 					path.is_active = True
 					if not path in src_host.path_list:
 						src_host.path_list.append(path)
-					print "-----\nNew path for src dst {} {}\t:{}".format(src_host.ipaddr, dst_host.ipaddr, path)
 					path = path.path
 				except Exception as e:
 					print repr(e)

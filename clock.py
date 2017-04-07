@@ -72,7 +72,6 @@ class Clock:
     def tick(self):
         secondsCarry = False
         minutesCarry = False
-        hoursCarry = False
 
         if self.seconds == 59:
             secondsCarry = True
@@ -84,6 +83,18 @@ class Clock:
 
         if secondsCarry:
             self.minutes = (self.minutes + 1) % 60
+
+        if minutesCarry:
+            self.hours =  (self.hours + 1) % 24
+
+
+    def tickMinutes(self):
+        minutesCarry = False
+
+        if self.minutes == 59:
+            minutesCarry = True
+
+        self.minutes = (self.minutes + 1) % 60
 
         if minutesCarry:
             self.hours =  (self.hours + 1) % 24
