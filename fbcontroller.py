@@ -102,10 +102,16 @@ class Forwarding(object):
 
 
 	def check_if_can_merge(self, paths):
+		"""
+			Checks if the given paths can be merged into one path or fewer paths.
+			Merging should only happen if it doesn't lead to the overloading of a path.
+			Args:
+				paths: list of path objects.
+		"""
 		"Just use the first path in paths"
 		new_path = list(paths)[0].path
 
-		print "Merging all traffic from paths:"
+		print "Paths considered for merging:"
 		for path in paths:
 			print "\t{}".format(path.path)
 
@@ -133,7 +139,6 @@ class Forwarding(object):
 				"""If there is a new path then reroute traffic.
 				Otherwise all other paths are overloaded as well, do nothing"""
 				print "Splitting traffic from {} to {}".format(path, new_path)
-				#new_path = host.create_path(src_host, dst_host, new_path.path, is_active = True)
 				if not new_path in host.path_list:
 					host.path_list.append(new_path)
 				new_path.is_active = True
