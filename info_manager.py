@@ -57,14 +57,12 @@ class informationManager():
 		Returns:
 			list of all paths between src and dst.
 		"""
-		print "Fetching all paths between {}-{}".format(src, dst)
+		# print "Fetching all paths between {}-{}".format(src, dst)
 		if self.path_table.has_path(src.dpid, dst.dpid):
 			"Using cached path"
-			print "Using cached paths between {}-{}".format(src, dst)
 			return [p for p in self.path_table.get_path(src.dpid, dst.dpid)]
 		else:
 			"Compute and cache new path"
-			print "Computing all paths between {}-{}".format(src, dst)
 			for path in nx.all_shortest_paths(G, src.dpid, dst.dpid):
 				pathObj = Path.of(src, dst, path)
 				self.path_table.put_path(pathObj, src.dpid, dst.dpid)

@@ -119,6 +119,7 @@ class PathTable(object):
                 for dst in self.paths[src]:
                     #src_dst_paths = self.paths[src][dst]
                     all_active_paths[src][dst] = self.get_active_paths_between_src_dst(src, dst)
+                    all_active_paths[dst][src] = self.get_active_paths_between_src_dst(dst, src)
             return all_active_paths
 
 

@@ -46,14 +46,14 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(20, 0, 0)
+		self.clock = Clock(21, 0, 0)
 		self.policies = {}
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
 		Timer(CLOCK_TICK_RATE, self.refresh_time, recurring = True)
-		#Timer(PATH_REFRESH_RATE, self.paths, recurring = True)
-		#Timer(10, self.pre_compute_paths, args = {G: G}, recurring = False)
+		Timer(PATH_REFRESH_RATE, self.paths, recurring = True)
+		Timer(10, self.pre_compute_paths, args = {G: G}, recurring = False)
 
 
 	def refresh_time(self):
@@ -102,12 +102,18 @@ class Forwarding(object):
 		# 				if self.should_merge(src_dst_paths):
 		# 					"There are multiple paths between the same src and dst active. Check if can merge"
 		# 					self.check_if_can_merge(src_dst_paths)
+		#
+		# for host in info_manager.hosts:
+		# 	if host.path_list:
+		# 		print "----- Host {} ------".format(host.ipaddr)
+		# 		print "Paths:\t{}".format(host.path_list)
 		# else:
-		# 	for host in info_manager.hosts:
-		# 		if host.path_list and not host.is_sink:
-		# 			print "----- Host {} ------".format(host.ipaddr)
-		# 			for path in host.path_list:
-		# 				self.check_if_should_split(host, path)
+		for host in info_manager.hosts:
+			if host.path_list and not host.is_sink:
+				print "----- Host {} ------".format(host.ipaddr)
+				for path in host.path_list:
+					self.check_if_should_split(host, path)
+				print "Paths:\t{}".format(host.path_list)
 
 		print "---------------\n"
 
@@ -129,7 +135,7 @@ class Forwarding(object):
 				paths: list of path objects.
 		"""
 		"Just use the first path in paths"
-		new_path = list(paths)[0].path
+		new_path = list(paths)[0]
 
 		print "Paths considered for merging:"
 		for path in paths:
@@ -137,28 +143,32 @@ class Forwarding(object):
 
 		print "Merging all traffic into one path:\t{}".format(new_path)
 		for path in paths:
-			"Extract src and dst info from all paths"
-			src_host, dst_host = info_manager.get_hosts_from_path(path)
-			self.modify_path_rules(new_path, src_host, dst_host, is_split=False)
+			if path != new_path:
+				"Extract src and dst info from all paths"
+				src_host, dst_host = info_manager.get_hosts_from_path(path)
+				print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
+				self.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
 
-			if not path in src_host.path_list:
-				src_host.create_path(src_host, dst_host, new_path, is_active = True)
-				src_host.remove_path(path)
-			path.is_active = False
+				#src_host.remove_path(path)
+				path.is_active = False
+				if not new_path in src_host.path_list:
+					src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
+
+		print "\n------------------------------\n"
 
 
 	def check_if_should_split(self, host, path):
 		"There is a single path, check if overloaded"
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path.path)
-		print "Checking if should split {}".format(path)
+		# print "Checking if should split {}".format(path)
 		if overloaded_nodes:
 			src_host, dst_host = info_manager.get_hosts_from_path(path)
 			new_path = self.get_path_for_load_balancing(src_host, dst_host, path, overloaded_nodes)
-			print "Has overloaded nodes!"
+			# print "Has overloaded nodes!"
 			if new_path:
 				"""If there is a new path then reroute traffic.
 				Otherwise all other paths are overloaded as well, do nothing"""
-				print "Splitting traffic from {} to {}".format(path, new_path)
+				# print "Splitting traffic from {} to {}".format(path, new_path)
 				if not new_path in host.path_list:
 					host.path_list.append(new_path)
 				new_path.is_active = True
@@ -181,7 +191,7 @@ class Forwarding(object):
 		 	candidate: new path or None if no path was found.
 		"""
 
-		print "LB: Fetching paths for ({}, {})".format(src, dst)
+		# print "LB: Fetching paths for ({}, {})".format(src, dst)
 		all_paths = info_manager.all_paths(self.G, src, dst)
 		current_path_consumption = current_path.total_consumption
 
@@ -230,7 +240,7 @@ class Forwarding(object):
 			msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
 		else:
 			"Is merging paths"
-			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY_STRICT)
+			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 
 		msg.match.dl_type = ethernet.IP_TYPE
 		msg.match.nw_dst = dst_host.ipaddr
@@ -238,7 +248,7 @@ class Forwarding(object):
 		for index, node_dpid in enumerate(new_path):
 
 			"first node in the path"
-			if node_dpid == src_host.dpid and src_host:
+			if node_dpid == src_host.dpid:
 				"""if no src host was specified all traffic passing through
 				this switch will follow the same path"""
 				msg.match.nw_src = src_host.ipaddr
@@ -257,6 +267,7 @@ class Forwarding(object):
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)
 			connection.send(msg)
+			# print node_dpid, msg
 
 
 	def _handle_ConnectionUp (self,event):
@@ -329,19 +340,19 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
 				if not info_manager.path_table.has_path(path):
-					print "Put path in try statement {}".format(path)
+					# print "Put path in try statement {}".format(path)
 					info_manager.path_table.put_path(path)
 
 			except:
 				try:
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
-						print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
+						# print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
-						print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
+						# print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 					else:
-						print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
+						# print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
-						print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
+						# print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 
 					path.is_active = True
 					if not path in src_host.path_list:
@@ -364,10 +375,9 @@ class Forwarding(object):
 			path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:
-			print "Reverse path!"
 			path = path[::-1]
 
-		print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
+		# print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
 		if dpid not in path:
 			return EventHalt
 
@@ -387,8 +397,6 @@ class Forwarding(object):
 			"Last node in path"
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
-
-		print "-----"
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))
