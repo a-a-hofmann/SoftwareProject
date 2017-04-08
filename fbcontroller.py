@@ -328,35 +328,46 @@ class Forwarding(object):
 			try:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
-				if info_manager.path_table.has_path(path):
+				if not info_manager.path_table.has_path(path):
 					print "Put path in try statement {}".format(path)
 					info_manager.path_table.put_path(path)
-				path = path.path
+
 			except:
 				try:
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
 						print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
+						print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 					else:
-						print "No active path for src dst {} {}".format(src_host.dpid, dst_host.dpid)
+						print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
-						print "Path retrieved from info manager {}".format(path)
+						print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 
 					path.is_active = True
 					if not path in src_host.path_list:
 						src_host.path_list.append(path)
-					path = path.path
+
 				except Exception as e:
 					print repr(e)
 					print '-'*60
 					traceback.print_exc(file=sys.stdout)
 					print '-'*60
 					return EventHalt
+
+			if not path in src_host.path_list:
+				src_host.path_list.append(path)
+			path = path.path
+
 		else:
 			path = src_host.get_path(src_host.dpid, dst_host.dpid)
 			path.is_active = True
 			path = path.path
 
+		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:
+			print "Reverse path!"
+			path = path[::-1]
+
+		print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
 		if dpid not in path:
 			return EventHalt
 
@@ -376,6 +387,8 @@ class Forwarding(object):
 			"Last node in path"
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
+
+		print "-----"
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))

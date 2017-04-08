@@ -105,7 +105,8 @@ class PathTable(object):
             paths = self.get_active_paths_between_src_dst(src, dst)
             if paths:
                 return paths
-            return self.get_active_paths_between_src_dst(dst, src)
+
+            return [path.reverse_path() for path in self.get_active_paths_between_src_dst(dst, src)]
         elif src:
             print "Only src provided"
             src_paths = self.paths[src]
