@@ -163,12 +163,13 @@ class Forwarding(object):
 		# print "Checking if should split {}".format(path)
 		if overloaded_nodes:
 			src_host, dst_host = info_manager.get_hosts_from_path(path)
-			new_path = self.get_path_for_load_balancing(src_host, dst_host, path, overloaded_nodes)
+			print "Check if should split ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, path)
+			new_path = self.get_path_for_load_balancing(host, dst_host, path, overloaded_nodes)
 			# print "Has overloaded nodes!"
 			if new_path:
 				"""If there is a new path then reroute traffic.
 				Otherwise all other paths are overloaded as well, do nothing"""
-				# print "Splitting traffic from {} to {}".format(path, new_path)
+				print "Splitting traffic from {} to {}".format(path, new_path)
 				if not new_path in host.path_list:
 					host.path_list.append(new_path)
 				new_path.is_active = True
@@ -190,7 +191,6 @@ class Forwarding(object):
 		Returns:
 		 	candidate: new path or None if no path was found.
 		"""
-
 		# print "LB: Fetching paths for ({}, {})".format(src, dst)
 		all_paths = info_manager.all_paths(self.G, src, dst)
 		current_path_consumption = current_path.total_consumption
@@ -206,7 +206,8 @@ class Forwarding(object):
 					candidates.append(candidate)
 
 		if candidates:
-			return candidates[0]
+			new_path = Path.of(src, dst, candidates[0].path)
+			return new_path
 		return None
 
 
@@ -242,8 +243,11 @@ class Forwarding(object):
 			"Is merging paths"
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 
+		print "Installing new path rules for ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, new_path)
+
 		msg.match.dl_type = ethernet.IP_TYPE
 		msg.match.nw_dst = dst_host.ipaddr
+		msg.match.nw_src = src_host.ipaddr
 		msg.priority = 65535 #highest priority
 		for index, node_dpid in enumerate(new_path):
 
@@ -251,7 +255,7 @@ class Forwarding(object):
 			if node_dpid == src_host.dpid:
 				"""if no src host was specified all traffic passing through
 				this switch will follow the same path"""
-				msg.match.nw_src = src_host.ipaddr
+				#msg.match.nw_src = src_host.ipaddr
 
 			if index + 1 < len(new_path):
 				"intermediate node in the path"
@@ -263,9 +267,10 @@ class Forwarding(object):
 				out_port = dst_host.port
 
 			# print "Source node {} routing node {} to {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
-
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)
+
+			print "Node {}; Connection ({}, {}):\tport = {}".format(node_dpid, src_host.ipaddr, dst_host.ipaddr, out_port)
 			connection.send(msg)
 			# print node_dpid, msg
 
@@ -305,6 +310,8 @@ class Forwarding(object):
 	def _handle_PacketIn (self, event):
 		packet = event.parsed
 
+		# print "Handle packet in triggered! {}".format(packet)
+
 		if packet.type == ethernet.LLDP_TYPE or not packet.parsed:
 			return
 
@@ -333,11 +340,14 @@ class Forwarding(object):
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
 
+		# print "0 PacketIn: ({}, {})".format(src_host.ipaddr, dst_host.ipaddr)
+
 		if core.openflow_discovery.is_edge_port(dpid, port):
 			if not info_manager.get_host(dpid = dpid, port = port):
 				info_manager.hosts.append(info_manager.Host(dpid, port, src_mac, src_ip))
 			try:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
+				# print "1 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 				path_list = path.path
 				if not info_manager.path_table.has_path(path):
 					# print "Put path in try statement {}".format(path)
@@ -354,9 +364,14 @@ class Forwarding(object):
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
 						# print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 
+					path = Path.of(src_host, dst_host, path.path)
+					# print "2 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 					path.is_active = True
 					if not path in src_host.path_list:
 						src_host.path_list.append(path)
+						# if path.src_port !=
+				        # self.src_port = src_port
+						# src_host.path_list.append(path)
 
 				except Exception as e:
 					print repr(e)
@@ -365,6 +380,9 @@ class Forwarding(object):
 					print '-'*60
 					return EventHalt
 
+			path = Path.of(src_host, dst_host, path.path)
+			# print "3 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
+			path.is_active = True
 			if not path in src_host.path_list:
 				src_host.path_list.append(path)
 			path = path.path
@@ -372,6 +390,7 @@ class Forwarding(object):
 		else:
 			path = src_host.get_path(src_host.dpid, dst_host.dpid)
 			path.is_active = True
+			# print "4 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 			path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:

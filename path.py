@@ -61,7 +61,7 @@ class Path(object):
 
 
     def __repr__(self):
-        return str(self.__str__())
-        # return "{" + str(self.path) + ", isActive= " + str(self.is_active) + ", src_dpid=" + str(self.src_dpid) + \
-        # ", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
-        # ", dst_port=" + str(self.dst_port) + "}"
+        # return str(self.__str__())
+        return "{" + str(self.path) + ", isActive= " + str(self.is_active) + ", src_dpid=" + str(self.src_dpid) + \
+        ", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
+        ", dst_port=" + str(self.dst_port) + "}"
