@@ -113,7 +113,10 @@ class Forwarding(object):
 				print "----- Host {} ------".format(host.ipaddr)
 				for path in host.path_list:
 					self.check_if_should_split(host, path)
-				print "Paths:\t{}".format(host.path_list)
+				print "Paths:\n"
+				for path in host.path_list:
+					src, dst = info_manager.get_hosts_from_path(path)
+					print "({}, {}:\t{})".format(src.ipaddr, dst.ipaddr, path.path)
 
 		print "---------------\n"
 
@@ -237,19 +240,29 @@ class Forwarding(object):
 
 
 	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
-		if is_split:
-			msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
-		else:
-			"Is merging paths"
-			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
+		# if is_split:
+		# 	msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
+		# else:
+		# 	"Is merging paths"
+		# 	msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 
 		print "Installing new path rules for ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, new_path)
 
-		msg.match.dl_type = ethernet.IP_TYPE
-		msg.match.nw_dst = dst_host.ipaddr
-		msg.match.nw_src = src_host.ipaddr
-		msg.priority = 65535 #highest priority
+		# msg.match.dl_type = ethernet.IP_TYPE
+		# msg.match.nw_dst = dst_host.ipaddr
+		# msg.match.nw_src = src_host.ipaddr
+		# msg.priority = 65535 #highest priority
 		for index, node_dpid in enumerate(new_path):
+			if is_split:
+				msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
+			else:
+				"Is merging paths"
+				msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
+
+			msg.match.dl_type = ethernet.IP_TYPE
+			msg.match.nw_dst = dst_host.ipaddr
+			msg.match.nw_src = src_host.ipaddr
+			msg.priority = 65535 #highest priority
 
 			"first node in the path"
 			if node_dpid == src_host.dpid:
@@ -266,13 +279,13 @@ class Forwarding(object):
 				msg.match.nw_src = src_host.ipaddr
 				out_port = dst_host.port
 
-			# print "Source node {} routing node {} to {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
+			print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)
 
-			print "Node {}; Connection ({}, {}):\tport = {}".format(node_dpid, src_host.ipaddr, dst_host.ipaddr, out_port)
+			# print "Node {}; Connection ({}, {}):\tport = {}".format(node_dpid, src_host.ipaddr, dst_host.ipaddr, out_port)
 			connection.send(msg)
-			# print node_dpid, msg
+			print node_dpid, msg, "\n-------\n"
 
 
 	def _handle_ConnectionUp (self,event):
@@ -398,6 +411,7 @@ class Forwarding(object):
 
 		# print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
 		if dpid not in path:
+			print "asdfasdfasdfd"
 			return EventHalt
 
 		msg.match.nw_dst = dst_ip
@@ -416,6 +430,9 @@ class Forwarding(object):
 			"Last node in path"
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
+
+		print "----- Packet in triggered!!! ----"
+		print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))
