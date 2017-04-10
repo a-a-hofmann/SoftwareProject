@@ -285,7 +285,7 @@ class Forwarding(object):
 
 			# print "Node {}; Connection ({}, {}):\tport = {}".format(node_dpid, src_host.ipaddr, dst_host.ipaddr, out_port)
 			connection.send(msg)
-			print node_dpid, msg, "\n-------\n"
+			# print node_dpid, msg, "\n-------\n"
 
 
 	def _handle_ConnectionUp (self,event):
