@@ -121,11 +121,12 @@ class Forwarding(object):
 		all_active_paths = info_manager.get_all_active_paths()
 		path_host_map = info_manager.get_active_path_hosts_dict()
 
-		print "Dict"
+		# print "Dict"
 		for path in path_host_map:
-			print path, path_host_map[path]
-			src, dst = path_host_map[path][0]
-			self.check_if_should_split(src, Path.of(src, dst, path, True))
+			host_list = path_host_map[path]
+			# print path, host_list
+			if host_list and len(host_list) > 1:
+				self.check_if_should_split(path, host_list)
 		# print info_manager.path_tables
 
 		print "---------------\n"
@@ -170,27 +171,25 @@ class Forwarding(object):
 		print "\n------------------------------\n"
 
 
-	def check_if_should_split(self, host, path):
-		"There is a single path, check if overloaded"
-		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path.path)
-		# print "Checking if should split {}".format(path)
+	def check_if_should_split(self, path, host_pairs):
+		print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
+		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path)
+		print "Overloaded nodes {}".format(overloaded_nodes)
 		if overloaded_nodes:
-			src_host, dst_host = info_manager.get_hosts_from_path(path)
-			print "Check if should split ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, path)
-			new_path = self.get_path_for_load_balancing(host, dst_host, path, overloaded_nodes)
-			# print "Has overloaded nodes!"
+			"Split list of hosts into two, one half will use a new path."
+			new_path = self.get_path_for_load_balancing(path[0], path[-1], path, overloaded_nodes)
+
 			if new_path:
-				"""If there is a new path then reroute traffic.
-				Otherwise all other paths are overloaded as well, do nothing"""
+				n_hosts = len(host_pairs)
+				first_half_hosts = host_pairs[:n_hosts/2]
+				second_half_hosts = host_pairs[n_hosts/2:]
+
 				print "Splitting traffic from {} to {}".format(path, new_path)
-				if not new_path in host.path_list:
-					host.path_list.append(new_path)
-				new_path.is_active = True
-
-				print "------------------------------------------------"
-
-				"Load balance"
-				self.modify_path_rules(new_path.path, src_host, dst_host, is_split = True)
+				for src, dst in second_half_hosts:
+					self.modify_path_rules(new_path, src, dst, is_split=True)
+					pathObj = src.create_path(src, dst, new_path, is_active=True)
+					info_manager.path_table.set_path_active(src.dpid, dst.dpid, pathObj)
+					info_manager.path_table.set_path_active(src.dpid, dst.dpid, Path.of(src, dst, list(path)), False) # Set old path as inactive
 
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
@@ -205,23 +204,23 @@ class Forwarding(object):
 		 	candidate: new path or None if no path was found.
 		"""
 		# print "LB: Fetching paths for ({}, {})".format(src, dst)
-		all_paths = info_manager.all_paths(self.G, src, dst)
-		current_path_consumption = current_path.total_consumption
+		all_paths = info_manager.all_paths(self.G, src_dpid=src, dst_dpid=dst)
+		print "Current path:\t{}".format(current_path)
+		print "All paths:\t{}".format(all_paths)
+		all_paths.remove(list(current_path))
+		current_path_consumption = sum(info_manager.compute_path_information(current_path)[0].itervalues())
 
 		candidates = []
 		for candidate in all_paths:
-			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate.path)
+			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate)
 
-			if not overloaded and not any(item[0] in candidate.path for item in overloaded_nodes):
+			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
 				"Choose as candidate only if it isn't overloaded as well."
-				candidate_path_consumption = sum(info_manager.compute_path_information(candidate.path)[0].itervalues())
+				candidate_path_consumption = sum(info_manager.compute_path_information(candidate)[0].itervalues())
 				if current_path_consumption + candidate_path_consumption < self.CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
 
-		if candidates:
-			new_path = Path.of(src, dst, candidates[0].path)
-			return new_path
-		return None
+		return candidates[0] if candidates else None
 
 
 	def check_nodes_in_path_for_loadbalancing(self, workloads=None, path=None):
@@ -250,18 +249,7 @@ class Forwarding(object):
 
 
 	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
-		# if is_split:
-		# 	msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
-		# else:
-		# 	"Is merging paths"
-		# 	msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
-
 		print "Installing new path rules for ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, new_path)
-
-		# msg.match.dl_type = ethernet.IP_TYPE
-		# msg.match.nw_dst = dst_host.ipaddr
-		# msg.match.nw_src = src_host.ipaddr
-		# msg.priority = 65535 #highest priority
 		for index, node_dpid in enumerate(new_path):
 			if is_split:
 				msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
@@ -279,6 +267,7 @@ class Forwarding(object):
 				"""if no src host was specified all traffic passing through
 				this switch will follow the same path"""
 				#msg.match.nw_src = src_host.ipaddr
+				pass
 
 			if index + 1 < len(new_path):
 				"intermediate node in the path"
@@ -333,8 +322,6 @@ class Forwarding(object):
 	def _handle_PacketIn (self, event):
 		packet = event.parsed
 
-		#print "Handle packet in triggered! {}".format(packet)
-
 		if packet.type == ethernet.LLDP_TYPE or not packet.parsed:
 			return
 
@@ -347,15 +334,12 @@ class Forwarding(object):
 		a = packet.find('ipv4')
 		b = packet.find('arp')
 
-		print a, b
 		if a:
 			src_ip = a.srcip
 			dst_ip = a.dstip
 		if b:
 			src_ip = b.protosrc
 			dst_ip = b.protodst
-
-		print src_ip, dst_ip
 
 		src_host = info_manager.get_host(ip=src_ip)
 		dst_host = info_manager.get_host(ip=dst_ip)
@@ -457,7 +441,7 @@ class Forwarding(object):
 			msg.match.nw_src = src_ip
 
 		# print "----- Packet in triggered!!! ----"
-		print "PacketIn: Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
+		# print "PacketIn: Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))

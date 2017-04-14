@@ -109,13 +109,11 @@ class PathTable(object):
         print "------ End Active Path -----\n"
 
 
-    def set_path_active(self, src, dst, path):
+    def set_path_active(self, src, dst, path, is_active=True):
         if src in self.paths and dst in self.paths[src]:
             for p in self.paths[src][dst]:
                 if p == path:
-                    p.is_active = True
-        else:
-            print "No path for given src"
+                    p.is_active = is_active
 
 
     def __str__(self):

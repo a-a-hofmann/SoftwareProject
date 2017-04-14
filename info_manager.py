@@ -47,27 +47,38 @@ class informationManager():
 		return all_paths[minimal_path_index]
 
 
-	def all_paths(self, G, src, dst):
+	def all_paths(self, G, src=None, dst=None, src_dpid=None, dst_dpid=None):
 		"""
 		For a given source src and destination dst, compute all shortest paths.
 		Args:
 			G: graph.
-			src: source obj.
-			dst: destination obj.
+			src: source obj. Defaults to None.
+			dst: destination obj. Defaults to None.
+			src_dpid: source dpid. Defaults to None.
+			dst_dpid: dst dpid. Defaults to None.
 		Returns:
-			list of all paths between src and dst.
+			List of all paths between src and dst. If only src_dpid and dst_dpid
+			were given it returns a list of paths defined as a list of nodes and not path objects.
 		"""
+		if src_dpid and dst_dpid and not src and not dst:
+			path_list = []
+			for path in nx.all_shortest_paths(G, src_dpid, dst_dpid):
+				path_list.append(path)
+			return path_list
+
+		src_dpid = src.dpid
+		dst_dpid = dst.dpid
 		# print "Fetching all paths between {}-{}".format(src, dst)
-		if self.path_table.has_path(src.dpid, dst.dpid):
+		if self.path_table.has_path(src_dpid, dst_dpid):
 			"Using cached path"
-			return [p for p in self.path_table.get_path(src.dpid, dst.dpid)]
+			return [p for p in self.path_table.get_path(src_dpid, dst_dpid)]
 		else:
 			"Compute and cache new path"
-			for path in nx.all_shortest_paths(G, src.dpid, dst.dpid):
+			for path in nx.all_shortest_paths(G, src_dpid, dst_dpid):
 				pathObj = Path.of(src, dst, path)
-				self.path_table.put_path(pathObj, src.dpid, dst.dpid)
+				self.path_table.put_path(pathObj, src_dpid, dst_dpid)
 
-			return self.path_table.get_path(src.dpid, dst.dpid)
+			return self.path_table.get_path(src_dpid, dst_dpid)
 
 
 	def get_active_path_hosts_dict(self):
