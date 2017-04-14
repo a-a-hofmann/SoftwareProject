@@ -93,41 +93,26 @@ class Forwarding(object):
 		print "\nIterating over hosts and computing most efficient paths"
 		print "---------------\n"
 
-		# if self.clock.isEnergySavingsTime():
-			# all_active_paths = info_manager.get_all_active_paths()
-		# 	for src in all_active_paths:
-		# 		for dst in all_active_paths[src]:
-		# 			src_dst_paths = all_active_paths[src][dst]
-		# 			if src_dst_paths:
-		# 				print "Checking if can merge {}".format(src_dst_paths)
-		# 				if self.should_merge(src_dst_paths):
-		# 					"There are multiple paths between the same src and dst active. Check if can merge"
-		# 					self.check_if_can_merge(src_dst_paths)
-		#
-		# for host in info_manager.hosts:
-		# 	if host.path_list:
-		# 		print "----- Host {} ------".format(host.ipaddr)
-		# 		print "Paths:\t{}".format(host.path_list)
-		# else:
-		# for host in info_manager.hosts:
-		# 	if host.path_list and not host.is_sink:
-		# 		print "----- Host {} ------".format(host.ipaddr)
-		# 		for path in host.path_list:
-		# 			self.check_if_should_split(host, path)
-		# 		print "Paths:\n"
-		# 		for path in host.path_list:
-		# 			src, dst = info_manager.get_hosts_from_path(path)
-		# 			print "({}, {}:\t{})".format(src.ipaddr, dst.ipaddr, path.path)
-		all_active_paths = info_manager.get_all_active_paths()
-		path_host_map = info_manager.get_active_path_hosts_dict()
+		info_manager.path_table.print_active_paths()
 
-		# print "Dict"
-		for path in path_host_map:
-			host_list = path_host_map[path]
-			# print path, host_list
-			if host_list and len(host_list) > 1:
-				self.check_if_should_split(path, host_list)
-		# print info_manager.path_tables
+		if str(self.clock) == "22:00:00":
+			print "Switching to energy savings mode."
+
+		if self.clock.isEnergySavingsTime():
+			all_active_paths = info_manager.get_all_active_paths()
+			for src in all_active_paths:
+				for dst in all_active_paths[src]:
+					src_dst_paths = all_active_paths[src][dst]
+					if src_dst_paths:
+						if self.should_merge(src_dst_paths):
+							"There are multiple paths between the same src and dst active. Check if can merge"
+							self.check_if_can_merge(src_dst_paths)
+		else:
+			path_host_map = info_manager.get_active_path_hosts_dict()
+			for path in path_host_map:
+				host_list = path_host_map[path]
+				if host_list and len(host_list) > 1:
+					self.check_if_should_split(path, host_list)
 
 		print "---------------\n"
 
@@ -151,6 +136,8 @@ class Forwarding(object):
 		"Just use the first path in paths"
 		new_path = list(paths)[0]
 
+		paths = paths[:PATH_MERGING_LIMIT]
+
 		print "Paths considered for merging:"
 		for path in paths:
 			print "\t{}".format(path.path)
@@ -162,8 +149,6 @@ class Forwarding(object):
 				src_host, dst_host = info_manager.get_hosts_from_path(path)
 				print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
 				self.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
-
-				#src_host.remove_path(path)
 				path.is_active = False
 				if not new_path in src_host.path_list:
 					src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
