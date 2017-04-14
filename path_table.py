@@ -9,7 +9,6 @@ class PathTable(object):
 
     def __init__(self):
         self.paths = defaultdict(lambda: defaultdict(set))
-        self.reverse = defaultdict(lambda: defaultdict(set))
 
 
     def has_path(self, src, dst):
@@ -21,16 +20,7 @@ class PathTable(object):
         Returns:
             True iff an entry exists, False otherwise.
         """
-
-        if src in self.paths:
-            return dst in self.paths[src]
-        elif dst in self.paths:
-            return src in self.paths[dst]
-        elif src in self.reverse:
-            return dst in self.reverse[src]
-        elif dst in self.reverse:
-            return src in self.reverse[dst]
-        return False
+        return src in self.paths and dst in self.paths[src]
 
 
     def get_path(self, src, dst):
@@ -42,16 +32,9 @@ class PathTable(object):
         Returns:
             path as list if exists, None otherwise
         """
-        if src in self.paths:
-            if dst in self.paths[src]:
-                return list(self.paths[src][dst])
+        if src in self.paths and dst in self.paths[src]:
+            return list(self.paths[src][dst])
 
-            print "Warning: (Fwd get_path) returning empty path list for ({}, {})".format(src, dst)
-        elif src in self.reverse:
-            if dst in self.reverse[src]:
-                return list(self.reverse[src][dst])
-
-        print "Warning: (Reverse get_path) returning empty path list for ({}, {})".format(src, dst)
         return []
 
 
@@ -68,21 +51,22 @@ class PathTable(object):
 
         if path:
             if not src or not dst:
-                src, dst = path.path[0], path.path[-1]
+                src, dst = path.src_dpid, path.dst_dpid
 
             if src != dst:
-                print "\tInserting path:\t{}".format(path.path)
-                self.paths[src][dst].add(path)
-                self.reverse[dst][src].add(path.reverse_path())
+                if path in self.paths[src][dst]:
+                    #print "\tHas already path:\t{}".format(path)
+                    self.set_path_active(src, dst, path)
+                else:
+                    #print "\tInserting path:\t{}".format(path)
+                    self.paths[src][dst].add(path)
         else:
-            if src != dst:
-                print "Empty path received"
+            print "Empty path received"
 
 
     def has_active_paths(self, src, dst):
         paths = self.get_active_paths(src, dst)
-        reverse_paths = self.get_active_paths(dst, src)
-        return (paths != None and len(paths) > 0) or (reverse_paths != None and len(reverse_paths) > 0)
+        return (paths != None and len(paths) > 0)
 
 
     def get_active_paths(self, src = None, dst = None):
@@ -102,34 +86,17 @@ class PathTable(object):
         all_active_paths = defaultdict(lambda: defaultdict(set))
 
         if src and dst:
-            paths = self.get_active_paths_between_src_dst(src, dst)
-            if paths:
-                return paths
-
-            return [path.reverse_path() for path in self.get_active_paths_between_src_dst(dst, src)]
-        elif src:
-            print "Only src provided"
-            src_paths = self.paths[src]
-            for dst in src_paths:
-                all_active_paths[src][dst] = self.get_active_paths_between_src_dst(src, dst)
-            return all_active_paths[src]
+            return self.get_active_paths_between_src_dst(src, dst)
         else:
-            print "Fetching all paths"
             for src in self.paths:
                 for dst in self.paths[src]:
-                    #src_dst_paths = self.paths[src][dst]
                     all_active_paths[src][dst] = self.get_active_paths_between_src_dst(src, dst)
-                    all_active_paths[dst][src] = self.get_active_paths_between_src_dst(dst, src)
             return all_active_paths
 
 
     def get_active_paths_between_src_dst(self, src, dst):
         if src in self.paths and dst in self.paths[src]:
-            src_dst_paths = self.paths[src][dst]
-            return [path for path in src_dst_paths if path.is_active]
-        elif src in self.reverse and dst in self.reverse[src]:
-            src_dst_paths = self.reverse[src][dst]
-            return [path for path in src_dst_paths if path.is_active]
+            return [path for path in self.paths[src][dst] if path.is_active]
         return set()
 
 
@@ -145,17 +112,7 @@ class PathTable(object):
     def set_path_active(self, src, dst, path):
         if src in self.paths and dst in self.paths[src]:
             for p in self.paths[src][dst]:
-                if p.path == path:
-                    p.is_active = True
-
-        if src in self.reverse and dst in self.reverse[src]:
-            for p in self.reverse[src][dst]:
-                if p.path == path:
-                    p.is_active = True
-
-        if dst in self.reverse and src in self.reverse[dst]:
-            for p in self.reverse[dst][src]:
-                if p.path == path:
+                if p == path:
                     p.is_active = True
         else:
             print "No path for given src"

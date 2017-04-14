@@ -70,6 +70,19 @@ class informationManager():
 			return self.path_table.get_path(src.dpid, dst.dpid)
 
 
+	def get_active_path_hosts_dict(self):
+		path_host_map = defaultdict(list)
+		all_active_paths = self.path_table.get_active_paths()
+		for src in all_active_paths:
+			for dst in all_active_paths[src]:
+				src_dst_paths = all_active_paths[src][dst]
+				for path in src_dst_paths:
+					src_host, dst_host = self.get_hosts_from_path(path)
+					path_host_map[tuple(path.path)].append((src_host, dst_host))
+
+		return path_host_map if path_host_map else dict()
+
+
 	def compute_path_information(self, path):
 		"""
 		For a given path compute path consumption, per node consumption, path

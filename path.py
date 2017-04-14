@@ -23,8 +23,9 @@ class Path(object):
 
 
     @classmethod
-    def of(cls, src, dst, path):
-        path = cls(src.dpid, src.port, dst.dpid, dst.port, path)
+    def of(cls, src, dst, path_list, is_active = False):
+        path = cls(src.dpid, src.port, dst.dpid, dst.port, path_list)
+        path.is_active = is_active
         return path
 
 
@@ -45,15 +46,15 @@ class Path(object):
 
 
     def __eq__(self, other):
-        if self is other:
-            return True
+        # if self is other:
+        #     return True
         return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
         and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
         and self.path == other.path
 
 
     def __hash__(self):
-        return hash(self.__repr__())
+        return hash(str(self.path) + str(self.src_dpid) + str(self.src_port) + str(self.dst_dpid) + str(self.dst_port))
 
 
     def __str__(self):

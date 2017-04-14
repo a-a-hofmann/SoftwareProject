@@ -74,6 +74,7 @@ class Forwarding(object):
 		for src, dst in host_combinations:
 			paths_generator = nx.all_shortest_paths(self.G, src.dpid, dst.dpid)
 
+			# TODO do + 1 for counter
 			counter = 0
 			for path in paths_generator:
 				if counter > PATH_LIMIT:
@@ -93,7 +94,7 @@ class Forwarding(object):
 		print "---------------\n"
 
 		# if self.clock.isEnergySavingsTime():
-		# 	all_active_paths = info_manager.get_all_active_paths()
+			# all_active_paths = info_manager.get_all_active_paths()
 		# 	for src in all_active_paths:
 		# 		for dst in all_active_paths[src]:
 		# 			src_dst_paths = all_active_paths[src][dst]
@@ -108,15 +109,24 @@ class Forwarding(object):
 		# 		print "----- Host {} ------".format(host.ipaddr)
 		# 		print "Paths:\t{}".format(host.path_list)
 		# else:
-		for host in info_manager.hosts:
-			if host.path_list and not host.is_sink:
-				print "----- Host {} ------".format(host.ipaddr)
-				for path in host.path_list:
-					self.check_if_should_split(host, path)
-				print "Paths:\n"
-				for path in host.path_list:
-					src, dst = info_manager.get_hosts_from_path(path)
-					print "({}, {}:\t{})".format(src.ipaddr, dst.ipaddr, path.path)
+		# for host in info_manager.hosts:
+		# 	if host.path_list and not host.is_sink:
+		# 		print "----- Host {} ------".format(host.ipaddr)
+		# 		for path in host.path_list:
+		# 			self.check_if_should_split(host, path)
+		# 		print "Paths:\n"
+		# 		for path in host.path_list:
+		# 			src, dst = info_manager.get_hosts_from_path(path)
+		# 			print "({}, {}:\t{})".format(src.ipaddr, dst.ipaddr, path.path)
+		all_active_paths = info_manager.get_all_active_paths()
+		path_host_map = info_manager.get_active_path_hosts_dict()
+
+		print "Dict"
+		for path in path_host_map:
+			print path, path_host_map[path]
+			src, dst = path_host_map[path][0]
+			self.check_if_should_split(src, Path.of(src, dst, path, True))
+		# print info_manager.path_tables
 
 		print "---------------\n"
 
@@ -323,7 +333,7 @@ class Forwarding(object):
 	def _handle_PacketIn (self, event):
 		packet = event.parsed
 
-		# print "Handle packet in triggered! {}".format(packet)
+		#print "Handle packet in triggered! {}".format(packet)
 
 		if packet.type == ethernet.LLDP_TYPE or not packet.parsed:
 			return
@@ -336,12 +346,16 @@ class Forwarding(object):
 
 		a = packet.find('ipv4')
 		b = packet.find('arp')
+
+		print a, b
 		if a:
 			src_ip = a.srcip
 			dst_ip = a.dstip
 		if b:
 			src_ip = b.protosrc
 			dst_ip = b.protodst
+
+		print src_ip, dst_ip
 
 		src_host = info_manager.get_host(ip=src_ip)
 		dst_host = info_manager.get_host(ip=dst_ip)
@@ -353,7 +367,7 @@ class Forwarding(object):
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
 
-		# print "0 PacketIn: ({}, {})".format(src_host.ipaddr, dst_host.ipaddr)
+		# print "0 PacketIn: ({}, {})".format(src_host, dst_host)
 
 		if core.openflow_discovery.is_edge_port(dpid, port):
 			if not info_manager.get_host(dpid = dpid, port = port):
@@ -371,13 +385,21 @@ class Forwarding(object):
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
 						# print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
-						# print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
+						#print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 					else:
-						# print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
+						#print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
-						# print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
+						#print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 
-					path = Path.of(src_host, dst_host, path.path)
+
+					src, dst = info_manager.get_hosts_from_path(path)
+					# print "Packet in: src_host, dst_host = ({}, {})\t src, dst = ({}, {})".format(src_host, dst_host, src, dst)
+					if src != src_host or dst != dst_host:
+						# print "Path has different src, dst. Creating new path object"
+						path = Path.of(src_host, dst_host, path.path, True)
+						src, dst = info_manager.get_hosts_from_path(path)
+						# print "Inserting new path: {}\t src_host, dst_host = ({}, {})\t src, dst = ({}, {})".format(path, src_host, dst_host, src, dst)
+						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
 					# print "2 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 					path.is_active = True
 					if not path in src_host.path_list:
@@ -393,7 +415,11 @@ class Forwarding(object):
 					print '-'*60
 					return EventHalt
 
-			path = Path.of(src_host, dst_host, path.path)
+			src, dst = info_manager.get_hosts_from_path(path)
+			if src != src_host or dst != dst_host:
+				path = Path.of(src_host, dst_host, path.path)
+				info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
+			#path = Path.of(src_host, dst_host, path.path)
 			# print "3 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 			path.is_active = True
 			if not path in src_host.path_list:
@@ -411,7 +437,6 @@ class Forwarding(object):
 
 		# print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
 		if dpid not in path:
-			print "asdfasdfasdfd"
 			return EventHalt
 
 		msg.match.nw_dst = dst_ip
@@ -431,8 +456,8 @@ class Forwarding(object):
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
 
-		print "----- Packet in triggered!!! ----"
-		print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
+		# print "----- Packet in triggered!!! ----"
+		print "PacketIn: Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 
 		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))
