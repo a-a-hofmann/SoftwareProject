@@ -46,7 +46,7 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(21, 0, 0)
+		self.clock = Clock(20, 0, 0)
 		self.policies = {}
 
 		core.openflow.addListeners(self, priority = 0)
@@ -183,15 +183,18 @@ class Forwarding(object):
 
 			if new_path:
 				n_hosts = len(host_pairs)
-				first_half_hosts = host_pairs[:n_hosts/2]
 				second_half_hosts = host_pairs[n_hosts/2:]
 
 				print "Splitting traffic from {} to {}".format(path, new_path)
 				for src, dst in second_half_hosts:
 					self.modify_path_rules(new_path, src, dst, is_split=True)
-					pathObj = src.create_path(src, dst, new_path, is_active=True)
-					info_manager.path_table.set_path_active(src.dpid, dst.dpid, pathObj)
+					pathObj = Path.of(src, dst, new_path, is_active=True)
+					if not pathObj in src.path_list:
+						src.path_list.append(pathObj)
+					info_manager.path_table.put_path(src=src.dpid, dst=dst.dpid, path=pathObj)
 					info_manager.path_table.set_path_active(src.dpid, dst.dpid, Path.of(src, dst, list(path)), False) # Set old path as inactive
+			else:
+				print "No new path available!"
 
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
@@ -252,12 +255,7 @@ class Forwarding(object):
 	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
 		print "Installing new path rules for ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, new_path)
 		for index, node_dpid in enumerate(new_path):
-			if is_split:
-				msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
-			else:
-				"Is merging paths"
-				msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
-
+			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 			msg.match.dl_type = ethernet.IP_TYPE
 			msg.match.nw_dst = dst_host.ipaddr
 			msg.match.nw_src = src_host.ipaddr

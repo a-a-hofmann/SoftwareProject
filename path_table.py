@@ -55,8 +55,9 @@ class PathTable(object):
 
             if src != dst:
                 if path in self.paths[src][dst]:
+                    if path.is_active:
                     #print "\tHas already path:\t{}".format(path)
-                    self.set_path_active(src, dst, path)
+                        self.set_path_active(src, dst, path)
                 else:
                     #print "\tInserting path:\t{}".format(path)
                     self.paths[src][dst].add(path)
@@ -119,12 +120,8 @@ class PathTable(object):
     def __str__(self):
         s = ""
         for key1 in self.paths:
-            i = 3
             for key2 in self.paths[key1]:
                 s += "({}, {}): {}\n".format(key1, key2, self.paths[key1][key2])
-                i -= 1
-                if i == 0:
-                    break
         return s[:-1]
 
 
