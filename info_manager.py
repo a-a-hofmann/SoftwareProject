@@ -74,8 +74,10 @@ class informationManager():
 			return [p for p in self.path_table.get_path(src_dpid, dst_dpid)]
 		else:
 			"Compute and cache new path"
+			print "Inserting new path in cache!"
 			for path in nx.all_shortest_paths(G, src_dpid, dst_dpid):
 				pathObj = Path.of(src, dst, path)
+				print pathObj
 				self.path_table.put_path(pathObj, src_dpid, dst_dpid)
 
 			return self.path_table.get_path(src_dpid, dst_dpid)
@@ -101,10 +103,8 @@ class informationManager():
 		Args:
 			path: list of node dpids representing a path.
 		Returns:
-			path_consumption: consumption of the path as a whole.
 			node_consumptions: dict of node dpids and node consumption.
 			node_workloads: dict of node dpids and their workload.
-			path_workload: workload of the path as a whole.
 		"""
 		node_consumptions = {}
 		node_workloads = {}
@@ -276,6 +276,7 @@ class informationManager():
 			node_object.aux_workload = node_object.aux_workload.fromkeys(node_object.aux_workload, 0)
 
 		return to_kw(consumption)
+
 
 	def get_hosts_from_path(self, path):
 		src_dpid, src_port = path.src_dpid, path.src_port

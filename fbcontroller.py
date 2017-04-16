@@ -58,7 +58,6 @@ class Forwarding(object):
 
 	def refresh_time(self):
 		self.clock.tickMinutes()
-		print self.clock
 
 
 	def pre_compute_paths(self, G):
@@ -74,12 +73,12 @@ class Forwarding(object):
 		for src, dst in host_combinations:
 			paths_generator = nx.all_shortest_paths(self.G, src.dpid, dst.dpid)
 
-			# TODO do + 1 for counter
 			counter = 0
 			for path in paths_generator:
 				if counter > PATH_LIMIT:
 					break
 
+				# counter += 1 # TODO de-comment for big topologies
 				path = Path(src.dpid, src.port, dst.dpid, dst.port, path)
 				info_manager.path_table.put_path(path = path, src = src.dpid, dst = dst.dpid)
 
@@ -91,8 +90,8 @@ class Forwarding(object):
 		"""
 
 		print "\nIterating over hosts and computing most efficient paths"
-		print "---------------\n"
 
+		print "-------- {} --------\n".format(self.clock)
 		info_manager.path_table.print_active_paths()
 
 		if str(self.clock) == "22:00:00":
@@ -103,8 +102,7 @@ class Forwarding(object):
 			for src in all_active_paths:
 				for dst in all_active_paths[src]:
 					src_dst_paths = all_active_paths[src][dst]
-					if src_dst_paths:
-						if self.should_merge(src_dst_paths):
+					if src_dst_paths and self.should_merge(src_dst_paths):
 							"There are multiple paths between the same src and dst active. Check if can merge"
 							self.check_if_can_merge(src_dst_paths)
 		else:
@@ -135,26 +133,45 @@ class Forwarding(object):
 		"""
 		"Just use the first path in paths"
 		new_path = list(paths)[0]
+		new_path.total_consumption = sum(info_manager.compute_path_information(new_path.path)[0].itervalues())
 
+		"If any other path is already using new_path, do not consider for merging"
+		paths = [path for path in paths if path.path != new_path.path]
 		paths = paths[:PATH_MERGING_LIMIT]
 
 		print "Paths considered for merging:"
 		for path in paths:
 			print "\t{}".format(path.path)
 
-		print "Merging all traffic into one path:\t{}".format(new_path)
+		print "Merging traffic into one path:\t{}".format(new_path)
 		for path in paths:
-			if path != new_path:
-				"Extract src and dst info from all paths"
-				src_host, dst_host = info_manager.get_hosts_from_path(path)
-				print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
-				self.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
-				path.is_active = False
-				if not new_path in src_host.path_list:
-					src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
+			if path != new_path and path.path != new_path.path:
+				path_consumption = sum(info_manager.compute_path_information(path.path)[0].itervalues())
+
+				if self.can_merge(path_consumption, new_path.total_consumption):
+					new_path.total_consumption += path_consumption
+					"Extract src and dst info from all paths"
+					src_host, dst_host = info_manager.get_hosts_from_path(path)
+					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
+					self.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
+					path.is_active = False
+					if not new_path in src_host.path_list:
+						src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
 
 		print "\n------------------------------\n"
 
+
+	def can_merge(self, path1_consumption, path2_consumption):
+		"""
+			Checks wheter merging paths together would mean going over the
+			consumption threshold.
+			Args:
+				path1_consumption: consumption.
+				path2_consumption: consumption.
+			Returns:
+				True iff sum of consumption is less then CONSUMPTION_THRESHOLD.
+		"""
+		return path1_consumption + path2_consumption > self.CONSUMPTION_THRESHOLD
 
 	def check_if_should_split(self, path, host_pairs):
 		print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
@@ -188,7 +205,6 @@ class Forwarding(object):
 		Returns:
 		 	candidate: new path or None if no path was found.
 		"""
-		# print "LB: Fetching paths for ({}, {})".format(src, dst)
 		all_paths = info_manager.all_paths(self.G, src_dpid=src, dst_dpid=dst)
 		print "Current path:\t{}".format(current_path)
 		print "All paths:\t{}".format(all_paths)
@@ -266,10 +282,7 @@ class Forwarding(object):
 			print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)
-
-			# print "Node {}; Connection ({}, {}):\tport = {}".format(node_dpid, src_host.ipaddr, dst_host.ipaddr, out_port)
 			connection.send(msg)
-			# print node_dpid, msg, "\n-------\n"
 
 
 	def _handle_ConnectionUp (self,event):
@@ -336,46 +349,30 @@ class Forwarding(object):
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
 
-		# print "0 PacketIn: ({}, {})".format(src_host, dst_host)
-
 		if core.openflow_discovery.is_edge_port(dpid, port):
 			if not info_manager.get_host(dpid = dpid, port = port):
 				info_manager.hosts.append(info_manager.Host(dpid, port, src_mac, src_ip))
 			try:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
-				# print "1 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 				path_list = path.path
 				if not info_manager.path_table.has_path(path):
-					# print "Put path in try statement {}".format(path)
 					info_manager.path_table.put_path(path)
 
 			except:
 				try:
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
-						# print "Has active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
-						#print "Active Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
 					else:
-						#print "No active path for ({}, {})".format(src_host.dpid, dst_host.dpid)
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
-						#print "Path retrieved from path_table for({}, {}):\t{}".format(src_host.dpid, dst_host.dpid, path)
-
 
 					src, dst = info_manager.get_hosts_from_path(path)
-					# print "Packet in: src_host, dst_host = ({}, {})\t src, dst = ({}, {})".format(src_host, dst_host, src, dst)
 					if src != src_host or dst != dst_host:
-						# print "Path has different src, dst. Creating new path object"
 						path = Path.of(src_host, dst_host, path.path, True)
 						src, dst = info_manager.get_hosts_from_path(path)
-						# print "Inserting new path: {}\t src_host, dst_host = ({}, {})\t src, dst = ({}, {})".format(path, src_host, dst_host, src, dst)
 						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
-					# print "2 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 					path.is_active = True
 					if not path in src_host.path_list:
 						src_host.path_list.append(path)
-						# if path.src_port !=
-				        # self.src_port = src_port
-						# src_host.path_list.append(path)
 
 				except Exception as e:
 					print repr(e)
@@ -388,8 +385,6 @@ class Forwarding(object):
 			if src != src_host or dst != dst_host:
 				path = Path.of(src_host, dst_host, path.path)
 				info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
-			#path = Path.of(src_host, dst_host, path.path)
-			# print "3 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 			path.is_active = True
 			if not path in src_host.path_list:
 				src_host.path_list.append(path)
@@ -398,13 +393,11 @@ class Forwarding(object):
 		else:
 			path = src_host.get_path(src_host.dpid, dst_host.dpid)
 			path.is_active = True
-			# print "4 PacketIn: ({}, {}):\t{}".format(info_manager.get_hosts_from_path(path)[0].ipaddr,info_manager.get_hosts_from_path(path)[1].ipaddr, path)
 			path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:
 			path = path[::-1]
 
-		# print "Setting flow rules, ({}, {})\n\tCurrent dpid {}\t path {} ({})".format(src_host, dst_host, dpid, path, type(path))
 		if dpid not in path:
 			return EventHalt
 
@@ -425,10 +418,6 @@ class Forwarding(object):
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
 
-		# print "----- Packet in triggered!!! ----"
-		# print "PacketIn: Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
-
-		# print "PacketIn:\tSource node {} routing node {} to {} on port {}".format(src_host.dpid, dpid, dst_ip, out_port)
 		msg.actions.append(of.ofp_action_output(port = out_port))
 		event.connection.send(msg)
 
@@ -587,11 +576,6 @@ class Monitoring (object):
 				#print h.macaddr, mbps, user_consumption
 				h.update_tokens(user_consumption)
 				update_user_consumption(h.macaddr, user_consumption)
-
-		# consumption = node.get_consumption()[0]
-		# if consumption > 0.12:
-		# 	print "Node {} stats:\t{}".format(node.id, consumption)
-		# 	print "\tPorts listening:\t{}".format([stat.port_no for stat in event.stats])
 
 		proportional, baseline, constant = node.get_consumption()
 		update_switch_consumption(dpid, proportional, baseline, constant)
