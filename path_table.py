@@ -68,7 +68,7 @@ class PathTable(object):
     def has_active_paths(self, src, dst):
         paths = self.get_active_paths(src, dst)
         return (paths != None and len(paths) > 0)
-
+        
 
     def get_active_paths(self, src = None, dst = None):
         """
@@ -111,10 +111,20 @@ class PathTable(object):
 
 
     def set_path_active(self, src, dst, path, is_active=True):
+        success = False
         if src in self.paths and dst in self.paths[src]:
             for p in self.paths[src][dst]:
                 if p == path:
+                    success = True
                     p.is_active = is_active
+
+        s = "Succeded setting path {} ".format(path)
+        if is_active:
+            s += "active:\t{}".format(success)
+        else:
+            s += "inactive:\t{}".format(success)
+
+        print s
 
 
     def __str__(self):

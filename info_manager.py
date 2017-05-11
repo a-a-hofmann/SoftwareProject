@@ -407,9 +407,6 @@ class informationManager():
 				path = self.get_path(src_dpid, dst_dpid)
 			if path:
 				self.path_list.remove(path)
-
-				global dirty
-				dirty = True
 				return True
 			else:
 				return False
@@ -418,9 +415,6 @@ class informationManager():
 		def remove_path(self, path):
 			if path in self.path_list:
 				self.path_list.remove(path)
-
-				global dirty
-				dirty = True
 				return True
 			else:
 				return False

@@ -24,6 +24,8 @@ from update_database import *
 from path_table import PathTable
 from path import Path
 from clock import Clock
+from policy_manager import PolicyManager
+from MergingPolicy import MergingPolicy
 
 import traceback, sys
 
@@ -46,8 +48,10 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(20, 0, 0)
+		self.clock = Clock(21, 0, 0)
 		self.policies = {}
+		self.policyManager = PolicyManager([], self.clock)
+		self.mergingPolicy = MergingPolicy(self, info_manager)
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
@@ -91,26 +95,28 @@ class Forwarding(object):
 
 		print "\nIterating over hosts and computing most efficient paths"
 
-		print "-------- {} --------\n".format(self.clock)
+		# print "-------- {} --------\n".format(self.clock)
+		print "-------- {} --------\n".format(self.policyManager.toString())
 		info_manager.path_table.print_active_paths()
 
 		if str(self.clock) == "22:00:00":
 			print "Switching to energy savings mode."
 
-		if self.clock.isEnergySavingsTime():
-			all_active_paths = info_manager.get_all_active_paths()
-			for src in all_active_paths:
-				for dst in all_active_paths[src]:
-					src_dst_paths = all_active_paths[src][dst]
-					if src_dst_paths and self.should_merge(src_dst_paths):
-							"There are multiple paths between the same src and dst active. Check if can merge"
-							self.check_if_can_merge(src_dst_paths)
-		else:
-			path_host_map = info_manager.get_active_path_hosts_dict()
-			for path in path_host_map:
-				host_list = path_host_map[path]
-				if host_list and len(host_list) > 1:
-					self.check_if_should_split(path, host_list)
+		# if self.clock.isEnergySavingsTime():
+		# 	self.mergingPolicy.apply()
+			# all_active_paths = info_manager.get_all_active_paths()
+			# for src in all_active_paths:
+			# 	for dst in all_active_paths[src]:
+			# 		src_dst_paths = all_active_paths[src][dst]
+			# 		if src_dst_paths and self.should_merge(src_dst_paths):
+			# 				"There are multiple paths between the same src and dst active. Check if can merge"
+			# 				self.check_if_can_merge(src_dst_paths)
+		# else:
+		path_host_map = info_manager.get_active_path_hosts_dict()
+		for path in path_host_map:
+			host_list = path_host_map[path]
+			if host_list and len(host_list) > 1:
+				self.check_if_should_split(path, host_list)
 
 		print "---------------\n"
 
@@ -155,6 +161,7 @@ class Forwarding(object):
 					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
 					self.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
 					path.is_active = False
+
 					if not new_path in src_host.path_list:
 						src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
 
@@ -172,6 +179,7 @@ class Forwarding(object):
 				True iff sum of consumption is less then CONSUMPTION_THRESHOLD.
 		"""
 		return path1_consumption + path2_consumption > self.CONSUMPTION_THRESHOLD
+
 
 	def check_if_should_split(self, path, host_pairs):
 		print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
@@ -191,7 +199,10 @@ class Forwarding(object):
 					pathObj = Path.of(src, dst, new_path, is_active=True)
 					if not pathObj in src.path_list:
 						src.path_list.append(pathObj)
+
+
 					info_manager.path_table.put_path(src=src.dpid, dst=dst.dpid, path=pathObj)
+
 					info_manager.path_table.set_path_active(src.dpid, dst.dpid, Path.of(src, dst, list(path)), False) # Set old path as inactive
 			else:
 				print "No new path available!"
@@ -210,8 +221,8 @@ class Forwarding(object):
 		"""
 		all_paths = info_manager.all_paths(self.G, src_dpid=src, dst_dpid=dst)
 		print "Current path:\t{}".format(current_path)
-		print "All paths:\t{}".format(all_paths)
 		all_paths.remove(list(current_path))
+		print "All paths:\t{}".format(all_paths)
 		current_path_consumption = sum(info_manager.compute_path_information(current_path)[0].itervalues())
 
 		candidates = []
@@ -253,7 +264,7 @@ class Forwarding(object):
 
 
 	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
-		print "Installing new path rules for ({}, {}):\t{}".format(src_host.ipaddr, dst_host.ipaddr, new_path)
+		print "Installing new path rules for ({}, {}):\t{}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port), new_path)
 		for index, node_dpid in enumerate(new_path):
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 			msg.match.dl_type = ethernet.IP_TYPE
@@ -347,6 +358,9 @@ class Forwarding(object):
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
 
+		print "Is this being triggered!!!"
+		print "\tsrc_host {}\tdst_host {}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port))
+
 		if core.openflow_discovery.is_edge_port(dpid, port):
 			if not info_manager.get_host(dpid = dpid, port = port):
 				info_manager.hosts.append(info_manager.Host(dpid, port, src_mac, src_ip))
@@ -354,19 +368,37 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
 				if not info_manager.path_table.has_path(path):
+					print "Trigger 1"
 					info_manager.path_table.put_path(path)
 
 			except:
 				try:
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
-						path = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)[0]
+						print "Using existing path in cache"
+						paths = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)
+
+						#print "Paths:\t{}".format(paths)
+						path = paths[0]
+						print path
+
+						for path_it in paths:
+							print path_it.__repr__()
+							if path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
+								path = path_it
+
+
+						#print "Fetched path:\t", path.__repr__()
 					else:
+						print "Using new path"
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
 
 					src, dst = info_manager.get_hosts_from_path(path)
 					if src != src_host or dst != dst_host:
+						print "\tSrc {}\t src_host {}\n\t dst {}\t dst_host {}".format(src, src_host, dst, dst_host)
 						path = Path.of(src_host, dst_host, path.path, True)
 						src, dst = info_manager.get_hosts_from_path(path)
+
+						print "Trigger 2"
 						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
 					path.is_active = True
 					if not path in src_host.path_list:
@@ -382,6 +414,7 @@ class Forwarding(object):
 			src, dst = info_manager.get_hosts_from_path(path)
 			if src != src_host or dst != dst_host:
 				path = Path.of(src_host, dst_host, path.path)
+				print "Trigger 3"
 				info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
 			path.is_active = True
 			if not path in src_host.path_list:
@@ -389,8 +422,20 @@ class Forwarding(object):
 			path = path.path
 
 		else:
-			path = src_host.get_path(src_host.dpid, dst_host.dpid)
-			path.is_active = True
+			paths = src_host.path_list
+			print paths
+
+			path = None
+			for path_it in paths:
+				if path_it.is_active and path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
+					path = path_it
+
+			if not path:
+				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_port=src_host.port, dst_port=dst_host.port)
+				path.is_active = True
+			
+			print "Trigger 4"
+			print path
 			path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:
