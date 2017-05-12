@@ -43,7 +43,7 @@ class PolicyManager(object):
 
 
 	def check_policies(self):
-		if self.clock.isEnergySavingsTime():
+		if self.clock.isEnergySavingsTimeForDemo():
 			print "Running in energy savings mode."
 			self.active_policies = [policy for policy in self.policies if isinstance(policy, MergingPolicy)]
 			assert len(self.active_policies) == 1
