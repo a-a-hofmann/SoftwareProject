@@ -1,14 +1,36 @@
 from info_manager import *
 from fbcontroller import *
 
-PATH_MERGING_LIMIT = 3
-CONSUMPTION_THRESHOLD = 5
-
 class MergingPolicy(object):
 
-	def __init__(self, fbcontroller, info_manager):
+	_PATH_MERGING_THRESHOLD = 3
+	_CONSUMPTION_THRESHOLD = 5
+
+	def __init__(self, controller, info_manager):
 		self.info_manager = info_manager
-		self.fbcontroller = fbcontroller
+		self.controller = controller
+
+
+	@property
+	def PATH_MERGING_THRESHOLD(self):
+		return self._PATH_MERGING_THRESHOLD
+
+
+	@PATH_MERGING_THRESHOLD.setter
+	def PATH_MERGING_THRESHOLD(self, new_limit):
+		assert new_limit > 0
+		self._PATH_MERGING_THRESHOLD = new_limit
+
+
+	@property
+	def CONSUMPTION_THRESHOLD(self):
+		return self._CONSUMPTION_THRESHOLD
+
+
+	@CONSUMPTION_THRESHOLD.setter
+	def CONSUMPTION_THRESHOLD(self, new_limit):
+		assert new_limit > 0
+		self._CONSUMPTION_THRESHOLD = new_limit
 
 
 	def apply(self):
@@ -34,7 +56,7 @@ class MergingPolicy(object):
 
 		"If any other path is already using new_path, do not consider for merging"
 		paths = [path for path in paths if path.path != new_path.path]
-		paths = paths[:PATH_MERGING_LIMIT]
+		paths = paths[:self._PATH_MERGING_THRESHOLD]
 
 		print "Paths considered for merging:"
 		for path in paths:
@@ -50,7 +72,7 @@ class MergingPolicy(object):
 					"Extract src and dst info from all paths"
 					src_host, dst_host = self.info_manager.get_hosts_from_path(path)
 					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
-					self.fbcontroller.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
+					self.controller.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
 					path.is_active = False
 					if not new_path in src_host.path_list:
 						src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
@@ -77,7 +99,7 @@ class MergingPolicy(object):
 			Returns:
 				True iff sum of consumption is less then CONSUMPTION_THRESHOLD.
 		"""
-		return path1_consumption + path2_consumption > CONSUMPTION_THRESHOLD
+		return path1_consumption + path2_consumption > self.CONSUMPTION_THRESHOLD
 
 
 	def compute_consumption(self, path):

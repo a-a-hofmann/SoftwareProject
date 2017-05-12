@@ -4,13 +4,35 @@ from path import Path
 
 class LoadBalancingPolicy(object):
 
-	CONSUMPTION_THRESHOLD = 5
-	LB_THRESHOLD = 1
+	_CONSUMPTION_THRESHOLD = 5
+	_LB_THRESHOLD = 1
 
 
 	def __init__(self, fbcontroller, info_manager):
 		self.info_manager = info_manager
 		self.fbcontroller = fbcontroller
+
+
+	@property
+	def CONSUMPTION_THRESHOLD(self):
+		return self._CONSUMPTION_THRESHOLD
+
+
+	@CONSUMPTION_THRESHOLD.setter
+	def CONSUMPTION_THRESHOLD(self, new_limit):
+		assert new_limit > 0
+		self._CONSUMPTION_THRESHOLD = new_limit
+
+
+	@property
+	def LB_THRESHOLD(self):
+		return self._LB_THRESHOLD
+
+
+	@LB_THRESHOLD.setter
+	def LB_THRESHOLD(self, new_limit):
+		assert new_limit > 0
+		self._LB_THRESHOLD = new_limit
 
 
 	def apply(self):
@@ -62,7 +84,7 @@ class LoadBalancingPolicy(object):
 		print "Current path:\t{}".format(current_path)
 		all_paths.remove(list(current_path))
 		print "All paths:\t{}".format(all_paths)
-		
+
 		current_path_consumption = sum(self.info_manager.compute_path_information(current_path)[0].itervalues()) #self.compute_consumption(current_path)
 
 		candidates = []
@@ -72,7 +94,7 @@ class LoadBalancingPolicy(object):
 			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
 				"Choose as candidate only if it isn't overloaded as well."
 				candidate_path_consumption = self.compute_consumption(candidate) #sum(info_manager.compute_path_information(candidate)[0].itervalues())
-				if current_path_consumption + candidate_path_consumption < self.CONSUMPTION_THRESHOLD:
+				if current_path_consumption + candidate_path_consumption < self._CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
 
 		return candidates[0] if candidates else None
@@ -94,7 +116,7 @@ class LoadBalancingPolicy(object):
 
 		overloaded_nodes = []
 		for node_id, node_workload in workloads.iteritems():
-			if node_workload > self.LB_THRESHOLD:
+			if node_workload > self._LB_THRESHOLD:
 				overloaded_nodes.append((node_id, node_workload))
 
 		if path:
