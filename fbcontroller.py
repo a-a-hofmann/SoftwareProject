@@ -96,14 +96,12 @@ class Forwarding(object):
 		print "\nIterating over hosts and computing most efficient paths"
 
 		# print "-------- {} --------\n".format(self.clock)
-		print "-------- {} --------\n".format(self.policyManager.toString())
+		self.policyManager.toString()
 		info_manager.path_table.print_active_paths()
 
-		if str(self.clock) == "22:00:00":
-			print "Switching to energy savings mode."
-
-		# if self.clock.isEnergySavingsTime():
-		# 	self.mergingPolicy.apply()
+		if self.clock.isEnergySavingsTimeForDemo():
+			print "Running in energy savings mode."
+			self.mergingPolicy.apply()
 			# all_active_paths = info_manager.get_all_active_paths()
 			# for src in all_active_paths:
 			# 	for dst in all_active_paths[src]:
@@ -111,12 +109,13 @@ class Forwarding(object):
 			# 		if src_dst_paths and self.should_merge(src_dst_paths):
 			# 				"There are multiple paths between the same src and dst active. Check if can merge"
 			# 				self.check_if_can_merge(src_dst_paths)
-		# else:
-		path_host_map = info_manager.get_active_path_hosts_dict()
-		for path in path_host_map:
-			host_list = path_host_map[path]
-			if host_list and len(host_list) > 1:
-				self.check_if_should_split(path, host_list)
+		else:
+			print "Running in load balancing mode."
+			path_host_map = info_manager.get_active_path_hosts_dict()
+			for path in path_host_map:
+				host_list = path_host_map[path]
+				if host_list and len(host_list) > 1:
+					self.check_if_should_split(path, host_list)
 
 		print "---------------\n"
 
@@ -358,8 +357,7 @@ class Forwarding(object):
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
 
-		print "Is this being triggered!!!"
-		print "\tsrc_host {}\tdst_host {}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port))
+		#print "\tsrc_host {}\tdst_host {}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port))
 
 		if core.openflow_discovery.is_edge_port(dpid, port):
 			if not info_manager.get_host(dpid = dpid, port = port):
@@ -368,37 +366,27 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
 				if not info_manager.path_table.has_path(path):
-					print "Trigger 1"
 					info_manager.path_table.put_path(path)
 
 			except:
 				try:
 					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
-						print "Using existing path in cache"
+						#print "Using existing path in cache"
 						paths = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)
-
-						#print "Paths:\t{}".format(paths)
 						path = paths[0]
-						print path
 
 						for path_it in paths:
-							print path_it.__repr__()
 							if path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
 								path = path_it
 
-
-						#print "Fetched path:\t", path.__repr__()
 					else:
-						print "Using new path"
+						#print "Using new path"
 						path = info_manager.all_paths(self.G, src_host, dst_host)[0]
 
 					src, dst = info_manager.get_hosts_from_path(path)
 					if src != src_host or dst != dst_host:
-						print "\tSrc {}\t src_host {}\n\t dst {}\t dst_host {}".format(src, src_host, dst, dst_host)
 						path = Path.of(src_host, dst_host, path.path, True)
 						src, dst = info_manager.get_hosts_from_path(path)
-
-						print "Trigger 2"
 						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
 					path.is_active = True
 					if not path in src_host.path_list:
@@ -414,7 +402,6 @@ class Forwarding(object):
 			src, dst = info_manager.get_hosts_from_path(path)
 			if src != src_host or dst != dst_host:
 				path = Path.of(src_host, dst_host, path.path)
-				print "Trigger 3"
 				info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
 			path.is_active = True
 			if not path in src_host.path_list:
@@ -434,8 +421,7 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_port=src_host.port, dst_port=dst_host.port)
 				path.is_active = True
 			
-			print "Trigger 4"
-			print path
+			#print "Trigger 4"
 			path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:

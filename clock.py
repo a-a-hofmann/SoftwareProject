@@ -1,3 +1,4 @@
+
 class Clock:
     """
     Class that acts like a clock.
@@ -53,6 +54,8 @@ class Clock:
     """
 
     def __init__(self, hours = None, minutes = None, seconds=None):
+        self.energySavingsMode = False
+
         if seconds != None and 0 <= seconds < 60:
             self.seconds = seconds
         else:
@@ -97,11 +100,19 @@ class Clock:
         self.minutes = (self.minutes + 1) % 60
 
         if minutesCarry:
-            self.hours =  (self.hours + 1) % 24
+            FIRST_CHANGE = False
+            self.hours = (self.hours + 1) % 24
 
 
     def isEnergySavingsTime(self):
-        return self.hours >= 22 or self.hours < 7
+        self.energySavingsMode = self.hours >= 22 or self.hours < 7
+        return self.energySavingsMode
+
+
+    def isEnergySavingsTimeForDemo(self):
+        if self.hours % 3 == 0 and self.minutes == 0:
+            self.energySavingsMode = not self.energySavingsMode
+        return self.energySavingsMode
 
 
     def setTime(self, hours, minutes, seconds):
@@ -137,6 +148,7 @@ class Clock:
     def __eq__(self, other):
         return self.seconds == other.seconds and self.minutes == other.minutes \
             and self.hours == other.hours
+
 
 if __name__ == '__main__':
     import doctest
