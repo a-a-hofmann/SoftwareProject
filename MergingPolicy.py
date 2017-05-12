@@ -8,7 +8,7 @@ class MergingPolicy(object):
 
 	def __init__(self, fbcontroller, info_manager):
 		self.info_manager = info_manager
-		self.fbcontroller = fbcontroller;
+		self.fbcontroller = fbcontroller
 
 
 	def apply(self):

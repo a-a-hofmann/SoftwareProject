@@ -26,6 +26,7 @@ from path import Path
 from clock import Clock
 from policy_manager import PolicyManager
 from MergingPolicy import MergingPolicy
+from load_balancing_policy import LoadBalancingPolicy
 
 import traceback, sys
 
@@ -52,6 +53,7 @@ class Forwarding(object):
 		self.policies = {}
 		self.policyManager = PolicyManager([], self.clock)
 		self.mergingPolicy = MergingPolicy(self, info_manager)
+		self.loadBalancingPolicy = LoadBalancingPolicy(self, info_manager)
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
@@ -111,11 +113,12 @@ class Forwarding(object):
 			# 				self.check_if_can_merge(src_dst_paths)
 		else:
 			print "Running in load balancing mode."
-			path_host_map = info_manager.get_active_path_hosts_dict()
-			for path in path_host_map:
-				host_list = path_host_map[path]
-				if host_list and len(host_list) > 1:
-					self.check_if_should_split(path, host_list)
+			self.loadBalancingPolicy.apply()
+			# path_host_map = info_manager.get_active_path_hosts_dict()
+			# for path in path_host_map:
+			# 	host_list = path_host_map[path]
+			# 	if host_list and len(host_list) > 1:
+			# 		self.check_if_should_split(path, host_list)
 
 		print "---------------\n"
 
