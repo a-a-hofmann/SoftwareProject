@@ -34,7 +34,7 @@ class MergingPolicy(object):
 
 
 	def apply(self):
-		all_active_paths = self.info_manager.get_all_active_paths()
+		all_active_paths = self.info_manager.get_active_paths()
 		for src in all_active_paths:
 			for dst in all_active_paths[src]:
 				src_dst_paths = all_active_paths[src][dst]

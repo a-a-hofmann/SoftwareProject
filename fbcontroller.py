@@ -21,11 +21,10 @@ from pox.lib.addresses import IPAddr,EthAddr
 import networkx as nx
 from info_manager import *
 from update_database import *
-from path_table import PathTable
 from path import Path
 from clock import Clock
 from policy_manager import PolicyManager
-from MergingPolicy import MergingPolicy
+from merging_policy import MergingPolicy
 from load_balancing_policy import LoadBalancingPolicy
 
 import traceback, sys
@@ -45,7 +44,7 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(21, 50, 0)
+		self.clock = Clock(20, 0, 0)
 		self.policies = {}
 
 		"Create policies and add them to the policy_manager."
@@ -64,34 +63,11 @@ class Forwarding(object):
 		core.listen_to_dependencies(self)
 		Timer(CLOCK_TICK_RATE, self.refresh_time, recurring = True)
 		Timer(PATH_REFRESH_RATE, self.paths, recurring = True)
-		Timer(10, self.pre_compute_paths, args = {G: G}, recurring = False)
+		Timer(10, info_manager.pre_compute_paths, args = {G: G}, recurring = False)
 
 
 	def refresh_time(self):
 		self.clock.tickMinutes()
-
-
-	def pre_compute_paths(self, G):
-		"""
-		Computes paths between all hosts in the network. It computes up to
-		PATH_LIMIT paths per each host.
-		All computed paths are saved to a path lookup table path_table.py
-		Args:
-			G: networkx graph containing the topology of the network.
-		"""
-		host_combinations = itertools.combinations(info_manager.hosts, 2)
-
-		for src, dst in host_combinations:
-			paths_generator = nx.all_shortest_paths(self.G, src.dpid, dst.dpid)
-
-			counter = 0
-			for path in paths_generator:
-				if counter > PATH_LIMIT:
-					break
-
-				# counter += 1 # TODO de-comment for big topologies
-				path = Path(src.dpid, src.port, dst.dpid, dst.port, path)
-				info_manager.path_table.put_path(path = path, src = src.dpid, dst = dst.dpid)
 
 
 	def paths(self):
@@ -102,8 +78,8 @@ class Forwarding(object):
 		print "\nIterating over hosts and applying policies"
 
 		self.policy_manager.print_time()
-		info_manager.path_table.print_active_paths()
-		self.policy_manager.apply_policy()
+		info_manager.print_active_paths()
+		self.policy_manager.apply_active_policies()
 
 		print "---------------\n"
 
@@ -211,14 +187,14 @@ class Forwarding(object):
 			try:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid)
 				path_list = path.path
-				if not info_manager.path_table.has_path(path):
-					info_manager.path_table.put_path(path)
+				if not info_manager.has_path(path):
+					info_manager.put_path(path)
 
 			except:
 				try:
-					if info_manager.path_table.has_active_paths(src_host.dpid, dst_host.dpid):
+					if info_manager.has_active_paths(src_host.dpid, dst_host.dpid):
 						#print "Using existing path in cache"
-						paths = info_manager.path_table.get_active_paths(src_host.dpid, dst_host.dpid)
+						paths = info_manager.get_active_paths(src_host.dpid, dst_host.dpid)
 						path = paths[0]
 
 						for path_it in paths:
@@ -233,7 +209,7 @@ class Forwarding(object):
 					if src != src_host or dst != dst_host:
 						path = Path.of(src_host, dst_host, path.path, True)
 						src, dst = info_manager.get_hosts_from_path(path)
-						info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
+						info_manager.put_path(path, src_host.dpid, dst_host.dpid)
 					path.is_active = True
 					if not path in src_host.path_list:
 						src_host.path_list.append(path)
@@ -248,7 +224,7 @@ class Forwarding(object):
 			src, dst = info_manager.get_hosts_from_path(path)
 			if src != src_host or dst != dst_host:
 				path = Path.of(src_host, dst_host, path.path)
-				info_manager.path_table.put_path(path, src_host.dpid, dst_host.dpid)
+				info_manager.put_path(path, src_host.dpid, dst_host.dpid)
 			path.is_active = True
 			if not path in src_host.path_list:
 				src_host.path_list.append(path)
@@ -256,8 +232,6 @@ class Forwarding(object):
 
 		else:
 			paths = src_host.path_list
-			print paths
-
 			path = None
 			for path_it in paths:
 				if path_it.is_active and path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
@@ -587,6 +561,7 @@ def launch (topo = None):
 		graphicsThread.daemon = True
 		graphicsThread.start()
 		G = nx.Graph()
-		info_manager.path_table = PathTable()
+		#info_manager.path_table = PathTable()
 		core.registerNew(Forwarding, G)
 		core.registerNew(Monitoring, G)
+

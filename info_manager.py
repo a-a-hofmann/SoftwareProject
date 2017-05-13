@@ -5,25 +5,64 @@ from update_database import *
 import networkx as nx
 from path_table import PathTable
 from path import Path
+import itertools
 
 
 MIN_WORKLOAD = 0.1
 SC_THRESHOLD = 5
 ALR_1_THRESHOLD = 10
-
-dirty = False
+PATH_LIMIT = 10
 
 class informationManager():
 
 	hosts = []
 	nodes = []
-	path_table = None
+	path_table = PathTable()
 
 	all_active_paths = defaultdict(lambda: defaultdict(set))
 
-	def get_all_active_paths(self):
+
+	def pre_compute_paths(self, G):
+		"""
+		Computes paths between all hosts in the network. It computes up to
+		PATH_LIMIT paths per each host.
+		All computed paths are saved to a path lookup table path_table.py
+		Args:
+			G: networkx graph containing the topology of the network.
+		"""
+		host_combinations = itertools.combinations(self.hosts, 2)
+
+		for src, dst in host_combinations:
+			paths_generator = nx.all_shortest_paths(G, src.dpid, dst.dpid)
+
+			counter = 0
+			for path in paths_generator:
+				if counter > PATH_LIMIT:
+					break
+
+				# counter += 1 # TODO de-comment for big topologies
+				path = Path(src.dpid, src.port, dst.dpid, dst.port, path)
+				self.path_table.put_path(path = path, src = src.dpid, dst = dst.dpid)
+
+
+	def get_active_paths(self, src_dpid = None, dst_dpid = None):
+		return self.path_table.get_active_paths(src_dpid, dst_dpid)
+
+
+	def has_path(self, path):
+		return self.path_table.has_path(path)
+
+
+	def has_active_paths(self, src_dpid, dst_dpid):
+		return self.path_table.has_active_paths(src_dpid, dst_dpid)
+
+
+	def put_path(self, path, src_dpid = None, dst_dpid = None):
+		self.path_table.put_path(path, src_dpid, dst_dpid)
+
+
+	def print_active_paths(self):
 		self.path_table.print_active_paths()
-		return self.path_table.get_active_paths()
 
 
 	def get_most_efficient_path(self, G, src, dst):
@@ -181,8 +220,6 @@ class informationManager():
 			snk1 = create_host(27,5, EthAddr("00:00:00:00:00:17"),IPAddr("10.0.0.5"), True)
 			snk2 = create_host(2,5, EthAddr("00:00:00:00:00:18"),IPAddr("10.0.0.6"), True)
 
-			global dirty
-			dirty = True
 		else:
 			print "***** PLEASE, SPECIFY SPECIFY THE TOPOLOGY USER INTERFACE USING THE PARAMETER '--topo='\nE.g., --topo=fb or --topo=rnp"
 
@@ -382,9 +419,6 @@ class informationManager():
 
 			self.path_list.append(p)
 
-			global dirty
-			dirty = True
-			print "Setting flag to Dirty"
 			return p
 
 

@@ -110,7 +110,7 @@ class Clock:
 
 
     def isEnergySavingsTimeForDemo(self):
-        if self.hours % 3 == 0 and self.minutes == 0:
+        if self.hours % 2 == 0 and self.minutes == 0:
             self.energySavingsMode = not self.energySavingsMode
         return self.energySavingsMode
 

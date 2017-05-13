@@ -3,7 +3,7 @@ from path import Path
 
 class PathTable(object):
     """
-    Lookup tables for paths. This way we can avoid having to compute
+    Lookup table for paths. This way we can avoid having to compute
     all paths each time we need to do efficiency computations.
     """
 
