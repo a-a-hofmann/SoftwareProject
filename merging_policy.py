@@ -1,7 +1,12 @@
+from policy import Policy
 from info_manager import *
 from fbcontroller import *
 
-class MergingPolicy(object):
+
+class MergingPolicy(Policy):
+	"""
+	Merging policy. Tries to put links to sleep by making hosts use the same path.
+	"""
 
 	_PATH_MERGING_THRESHOLD = 3
 	_CONSUMPTION_THRESHOLD = 5
@@ -72,7 +77,7 @@ class MergingPolicy(object):
 					"Extract src and dst info from all paths"
 					src_host, dst_host = self.info_manager.get_hosts_from_path(path)
 					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
-					self.controller.modify_path_rules(new_path.path, src_host, dst_host, is_split=False)
+					self.controller.modify_path_rules(new_path.path, src_host, dst_host)
 					path.is_active = False
 					if not new_path in src_host.path_list:
 						src_host.create_path(src_host, dst_host, new_path.path, is_active = True)

@@ -1,16 +1,20 @@
+from policy import Policy
 from info_manager import *
 from fbcontroller import *
 from path import Path
 
-class LoadBalancingPolicy(object):
+
+class LoadBalancingPolicy(Policy):
+	"""
+	Load balancing policy. Tries to load balance all traffic to minimize MLU.
+	"""
 
 	_CONSUMPTION_THRESHOLD = 5
 	_LB_THRESHOLD = 1
 
-
-	def __init__(self, fbcontroller, info_manager):
+	def __init__(self, controller, info_manager):
 		self.info_manager = info_manager
-		self.fbcontroller = fbcontroller
+		self.controller = controller
 
 
 	@property
@@ -57,7 +61,7 @@ class LoadBalancingPolicy(object):
 
 				print "Splitting traffic from {} to {}".format(path, new_path)
 				for src, dst in second_half_hosts:
-					self.fbcontroller.modify_path_rules(new_path, src, dst, is_split=True)
+					self.controller.modify_path_rules(new_path, src, dst)
 					pathObj = Path.of(src, dst, new_path, is_active=True)
 					if not pathObj in src.path_list:
 						src.path_list.append(pathObj)
@@ -68,6 +72,7 @@ class LoadBalancingPolicy(object):
 					self.info_manager.path_table.set_path_active(src.dpid, dst.dpid, Path.of(src, dst, list(path)), False) # Set old path as inactive
 			else:
 				print "No new path available!"
+
 
 	def get_path_for_load_balancing(self, src, dst, current_path, overloaded_nodes):
 		"""
@@ -80,7 +85,7 @@ class LoadBalancingPolicy(object):
 		Returns:
 		 	candidate: new path or None if no path was found.
 		"""
-		all_paths = self.info_manager.all_paths(self.fbcontroller.G, src_dpid=src, dst_dpid=dst)
+		all_paths = self.info_manager.all_paths(self.controller.G, src_dpid=src, dst_dpid=dst)
 		print "Current path:\t{}".format(current_path)
 		all_paths.remove(list(current_path))
 		print "All paths:\t{}".format(all_paths)

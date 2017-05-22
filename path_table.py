@@ -68,7 +68,7 @@ class PathTable(object):
     def has_active_paths(self, src, dst):
         paths = self.get_active_paths(src, dst)
         return (paths != None and len(paths) > 0)
-        
+
 
     def get_active_paths(self, src = None, dst = None):
         """

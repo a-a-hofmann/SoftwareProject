@@ -23,7 +23,7 @@ from info_manager import *
 from update_database import *
 from path import Path
 from clock import Clock
-from policy_manager import PolicyManager
+from time_based_policy_manager import TimeBasedPolicyManager
 from merging_policy import MergingPolicy
 from load_balancing_policy import LoadBalancingPolicy
 
@@ -44,8 +44,7 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(20, 0, 0)
-		self.policies = {}
+		self.clock = Clock(18, 0, 0)
 
 		"Create policies and add them to the policy_manager."
 		mergingPolicy = MergingPolicy(self, info_manager)
@@ -57,16 +56,16 @@ class Forwarding(object):
 		LoadBalancingPolicy.LB_THRESHOLD = 100
 
 		policies = [{'policy': mergingPolicy, 'active': False}, {'policy': loadBalancingPolicy, 'active': True}]
-		self.policy_manager = PolicyManager(policies, self.clock)
+		self.policy_manager = TimeBasedPolicyManager(policies, self.clock)
 
 		core.openflow.addListeners(self, priority = 0)
 		core.listen_to_dependencies(self)
-		Timer(CLOCK_TICK_RATE, self.refresh_time, recurring = True)
+		Timer(CLOCK_TICK_RATE, self.tick, recurring = True)
 		Timer(PATH_REFRESH_RATE, self.paths, recurring = True)
 		Timer(10, info_manager.pre_compute_paths, args = {G: G}, recurring = False)
 
 
-	def refresh_time(self):
+	def tick(self):
 		self.clock.tickMinutes()
 
 
@@ -84,7 +83,14 @@ class Forwarding(object):
 		print "---------------\n"
 
 
-	def modify_path_rules(self, new_path, src_host, dst_host, is_split = False):
+	def modify_path_rules(self, new_path, src_host, dst_host):
+		"""
+		Modifies flow rules.
+		Args:
+            new_path: new path as node list.
+			src_host: source host as Host obj.
+            dst_host: destination host as Host obj.
+		"""
 		print "Installing new path rules for ({}, {}):\t{}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port), new_path)
 		for index, node_dpid in enumerate(new_path):
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
@@ -564,4 +570,3 @@ def launch (topo = None):
 		#info_manager.path_table = PathTable()
 		core.registerNew(Forwarding, G)
 		core.registerNew(Monitoring, G)
-
