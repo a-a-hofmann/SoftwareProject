@@ -40,7 +40,7 @@ class TimeBasedPolicyManager(PolicyManager):
 
 
 	def check_policies(self):
-		if self.clock.isEnergySavingsTimeForDemo():
+		if self.clock.isEnergySavingsTime():
 			print "Running in energy savings mode."
 			self.active_policies = [policy for policy in self.policies if isinstance(policy, MergingPolicy)]
 		else:

@@ -9,8 +9,8 @@ class LoadBalancingPolicy(Policy):
 	Load balancing policy. Tries to load balance all traffic to minimize MLU.
 	"""
 
-	_CONSUMPTION_THRESHOLD = 5
-	_LB_THRESHOLD = 1
+	_CONSUMPTION_THRESHOLD = 200000
+	_LB_THRESHOLD = 0
 
 	def __init__(self, controller, info_manager):
 		self.info_manager = info_manager
@@ -51,7 +51,7 @@ class LoadBalancingPolicy(Policy):
 		print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path)
 		print "Overloaded nodes {}".format(overloaded_nodes)
-		if overloaded_nodes:
+		if overloaded_nodes or True:
 			"Split list of hosts into two, one half will use a new path."
 			new_path = self.get_path_for_load_balancing(path[0], path[-1], path, overloaded_nodes)
 
@@ -62,10 +62,11 @@ class LoadBalancingPolicy(Policy):
 				print "Splitting traffic from {} to {}".format(path, new_path)
 				for src, dst in second_half_hosts:
 					self.controller.modify_path_rules(new_path, src, dst)
+
+					src.clear_paths()
 					pathObj = Path.of(src, dst, new_path, is_active=True)
 					if not pathObj in src.path_list:
 						src.path_list.append(pathObj)
-
 
 					self.info_manager.path_table.put_path(src=src.dpid, dst=dst.dpid, path=pathObj)
 
@@ -96,11 +97,13 @@ class LoadBalancingPolicy(Policy):
 		for candidate in all_paths:
 			overloaded = self.check_nodes_in_path_for_loadbalancing(path=candidate)
 
-			if not overloaded and not any(item[0] in candidate for item in overloaded_nodes):
+			if not overloaded:
 				"Choose as candidate only if it isn't overloaded as well."
 				candidate_path_consumption = self.compute_consumption(candidate) #sum(info_manager.compute_path_information(candidate)[0].itervalues())
 				if current_path_consumption + candidate_path_consumption < self._CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
+				else:
+					print "Would overload: ", current_path_consumption, candidate_path_consumption, self._CONSUMPTION_THRESHOLD
 
 		return candidates[0] if candidates else None
 

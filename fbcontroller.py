@@ -44,16 +44,11 @@ class Forwarding(object):
 	def __init__(self, G):
 		# Network Graph
 		self.G = G
-		self.clock = Clock(18, 0, 0)
+		self.clock = Clock(19, 0, 0)
 
 		"Create policies and add them to the policy_manager."
 		mergingPolicy = MergingPolicy(self, info_manager)
-		mergingPolicy.PATH_MERGING_THRESHOLD = 10
-		mergingPolicy.CONSUMPTION_THRESHOLD = 10
-
 		loadBalancingPolicy = LoadBalancingPolicy(self, info_manager)
-		LoadBalancingPolicy.CONSUMPTION_THRESHOLD = 100
-		LoadBalancingPolicy.LB_THRESHOLD = 100
 
 		policies = [{'policy': mergingPolicy, 'active': False}, {'policy': loadBalancingPolicy, 'active': True}]
 		self.policy_manager = TimeBasedPolicyManager(policies, self.clock)
@@ -97,14 +92,6 @@ class Forwarding(object):
 			msg.match.dl_type = ethernet.IP_TYPE
 			msg.match.nw_dst = dst_host.ipaddr
 			msg.match.nw_src = src_host.ipaddr
-			msg.priority = 65535 #highest priority
-
-			"first node in the path"
-			if node_dpid == src_host.dpid:
-				"""if no src host was specified all traffic passing through
-				this switch will follow the same path"""
-				#msg.match.nw_src = src_host.ipaddr
-				pass
 
 			if index + 1 < len(new_path):
 				"intermediate node in the path"
@@ -191,7 +178,7 @@ class Forwarding(object):
 			if not info_manager.get_host(dpid = dpid, port = port):
 				info_manager.hosts.append(info_manager.Host(dpid, port, src_mac, src_ip))
 			try:
-				path = src_host.get_path(src_host.dpid, dst_host.dpid)
+				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_host.port, dst_host.port)
 				path_list = path.path
 				if not info_manager.has_path(path):
 					info_manager.put_path(path)
@@ -234,7 +221,6 @@ class Forwarding(object):
 			path.is_active = True
 			if not path in src_host.path_list:
 				src_host.path_list.append(path)
-			path = path.path
 
 		else:
 			paths = src_host.path_list
@@ -247,8 +233,9 @@ class Forwarding(object):
 				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_port=src_host.port, dst_port=dst_host.port)
 				path.is_active = True
 
-			#print "Trigger 4"
-			path = path.path
+		
+		pathObj = path
+		path = path.path
 
 		if src_host.dpid == path[-1] and dst_host.dpid == path[0]:
 			path = path[::-1]
@@ -256,11 +243,12 @@ class Forwarding(object):
 		if dpid not in path:
 			return EventHalt
 
+		msg.match.nw_src = src_ip
 		msg.match.nw_dst = dst_ip
 
-		if dpid == src_host.dpid:
-			"First node in path"
-			msg.match.nw_src = src_ip
+		# if dpid == src_host.dpid:
+		# 	"First node in path"
+		# 	#msg.match.nw_src = src_ip
 
 		node_index = path.index(dpid)
 		if node_index + 1 < len(path):
@@ -272,6 +260,8 @@ class Forwarding(object):
 			"Last node in path"
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
+
+		print "Sending message to node {} out port {}, for path {} between src,dst = ({}, {})".format(dpid, out_port, pathObj.__repr__(), src_host, dst_host)
 
 		msg.actions.append(of.ofp_action_output(port = out_port))
 		event.connection.send(msg)
@@ -307,20 +297,16 @@ class Monitoring (object):
 			self.count_flow_stats_straight += 1
 			self.count_port_stats_straight += 1
 
-		nodes_list = []
+		
 		for h in info_manager.hosts:
 			border_node = info_manager.get_node(h.dpid)
 			try:
 				core.openflow.getConnection(border_node.id).send(of.ofp_stats_request(body=of.ofp_flow_stats_request()))
 				self.count_flow_stats_adaptive += 1
-				for p in h.path_list:
-					path = p.path
-					for node in path:
-						if node not in nodes_list:
-							nodes_list.append(node)
 			except:
 				continue
 
+		nodes_list = self.G.nodes()
 		aux = 0
 		for node in nodes_list:
 			aux += 1
@@ -349,6 +335,7 @@ class Monitoring (object):
 
 	def bytes_to_mbps(self, bytes):
 		return bytes/1024.0/1024.0*8
+
 
 	def probe_packet(self, src, dst):
 
@@ -388,7 +375,7 @@ class Monitoring (object):
 		dpid = event.connection.dpid
 		node = info_manager.get_node(dpid)
 
-		node.reset_port_workload()
+		#node.reset_port_workload()
 
 		for stat in event.stats:
 
@@ -408,6 +395,7 @@ class Monitoring (object):
 			main_gui.hosts_list = info_manager.hosts
 
 			if mbps == 0:
+				# print "Node {}: workload {}".format(dpid, mbps)
 				dpid_dst = node.link[node.id][stat.port_no]
 				main_gui.paintlink[dpid_dst][dpid] = mbps
 				main_gui.paintlink[dpid][dpid_dst] = mbps
@@ -417,6 +405,8 @@ class Monitoring (object):
 				dpid_dst = node.link[node.id][stat.port_no]
 				main_gui.paintlink[dpid_dst][dpid] = mbps
 				main_gui.paintlink[dpid][dpid_dst] = mbps
+
+		#		print "Node {}: workload {}\tnode.get_workload(): {}".format(dpid, mbps, node.get_workload())
 
 				h = info_manager.get_host(dpid = dpid, port = stat.port_no)
 				if not h:
@@ -433,6 +423,7 @@ class Monitoring (object):
 				update_user_consumption(h.macaddr, user_consumption)
 
 		proportional, baseline, constant = node.get_consumption()
+		#print "Node {} consumption: {}".format(dpid, proportional)
 		update_switch_consumption(dpid, proportional, baseline, constant)
 
 
@@ -519,6 +510,7 @@ class Monitoring (object):
 				update_latency(src_mac, dst_mac, latency, src_host.max_latency)
 				update_jitter(src_mac, dst_mac, src_host.calc_jitter(latency), src_host.max_jitter)
 				return EventHalt
+
 
 "@param topo: used to specify the topology GUI"
 def launch (topo = None):

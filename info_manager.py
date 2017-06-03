@@ -30,7 +30,7 @@ class informationManager():
 		Args:
 			G: networkx graph containing the topology of the network.
 		"""
-		host_combinations = itertools.combinations(self.hosts, 2)
+		host_combinations = itertools.permutations(self.hosts, 2)
 
 		for src, dst in host_combinations:
 			paths_generator = nx.all_shortest_paths(G, src.dpid, dst.dpid)
@@ -227,19 +227,30 @@ class informationManager():
 	def update_network_consumption(self):
 		proportional, baseline, constant = 0,0,0
 		for node in self.nodes:
-			if node.consumption:
-				for triple in node.consumption:
-					p,b,c = triple
-					proportional += p
-					baseline += b
-					constant += c
-				del node.consumption[:]
-				update_node_data(node.id, node.get_workload(), proportional, baseline, constant)
-			else:
-				p, b, c = node.get_consumption(node.get_workload())
-				proportional += p
-				baseline += b
-				constant += c
+			# if node.consumption:
+			# 	node_p = 0
+			# 	node_b = 0
+			# 	node_c = 0
+			# 	for triple in node.consumption:
+			# 		p,b,c = triple
+			# 		proportional += p
+			# 		baseline += b
+			# 		constant += c
+			# 		node_p += p
+			# 		node_b += b
+			# 		node_c += c
+			# 	del node.consumption[:]
+			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node_p)
+			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node.get_consumption())
+			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node_p)
+			# 	update_node_data(node.id, node.get_workload(), node_p, node_b, node_c)
+			# else:
+			p, b, c = node.get_consumption(node.get_workload())
+			proportional += p
+			baseline += b
+			constant += c
+			print "2 Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
+			update_node_data(node.id, node.get_workload(), p, b, c) 
 
 			node.reset_port_workload()
 
@@ -422,12 +433,20 @@ class informationManager():
 			return p
 
 
-		def get_path(self, src_dpid, dst_dpid, src_port=None, dst_port=None):
+		def get_path(self, src_dpid, dst_dpid, src_port=None, dst_port=None, path=None):
+			if path and src_port and dst_port:
+				for p in self.path_list:
+					if p.path == path.path and src_port == p.src_port and dst_port == p.dst_port:
+						return p
+
 			if src_port and dst_port:
 				for p in self.path_list:
 					if p.src_dpid == src_dpid and p.src_port == src_port:
 						if p.dst_dpid == dst_dpid and p.dst_port == dst_port:
-							return p
+							if path:
+								p.path = path.path
+							else:
+								return p
 			else:
 				for p in self.path_list:
 					if p.src_dpid == src_dpid and p.dst_dpid == dst_dpid:
@@ -452,6 +471,10 @@ class informationManager():
 				return True
 			else:
 				return False
+
+
+		def clear_paths(self):
+			self.path_list = []
 
 
 		def set_netw_tokens(self, ntokens, nrenewals):

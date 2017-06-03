@@ -9,7 +9,7 @@ class MergingPolicy(Policy):
 	"""
 
 	_PATH_MERGING_THRESHOLD = 3
-	_CONSUMPTION_THRESHOLD = 5
+	_CONSUMPTION_THRESHOLD = 50
 
 	def __init__(self, controller, info_manager):
 		self.info_manager = info_manager
@@ -45,10 +45,14 @@ class MergingPolicy(Policy):
 				src_dst_paths = all_active_paths[src][dst]
 				if src_dst_paths and self.should_merge(src_dst_paths):
 						"There are multiple paths between the same src and dst active. Check if can merge"
-						self.check_if_can_merge(src_dst_paths)
+						merged = self.merge(src_dst_paths)
+						print "Merged during this cycle?"
+						if merged:
+							print "Already merged paths on this cycle, will continue on the next cycle."
+							return 
 
 
-	def check_if_can_merge(self, paths):
+	def merge(self, paths):
 		"""
 			Checks if the given paths can be merged into one path or fewer paths.
 			Merging should only happen if it doesn't lead to the overloading of a path.
@@ -67,6 +71,8 @@ class MergingPolicy(Policy):
 		for path in paths:
 			print "\t{}".format(path.path)
 
+
+		merged = False
 		print "Merging traffic into one path:\t{}".format(new_path)
 		for path in paths:
 			if path != new_path and path.path != new_path.path:
@@ -76,13 +82,21 @@ class MergingPolicy(Policy):
 					new_path.total_consumption += path_consumption
 					"Extract src and dst info from all paths"
 					src_host, dst_host = self.info_manager.get_hosts_from_path(path)
+					path.is_active = False
 					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
 					self.controller.modify_path_rules(new_path.path, src_host, dst_host)
-					path.is_active = False
-					if not new_path in src_host.path_list:
-						src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
+					merged = True
+
+					src_host.clear_paths()
+				 	print "Adding new path {} to host {}".format(new_path, src_host)
+					addedPath = src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
+					self.info_manager.put_path(addedPath)
+
+				else:
+					print "Would overload path", path_consumption, new_path.total_consumption, self.CONSUMPTION_THRESHOLD
 
 		print "\n------------------------------\n"
+		return merged
 
 
 	def should_merge(self, paths):
@@ -104,7 +118,14 @@ class MergingPolicy(Policy):
 			Returns:
 				True iff sum of consumption is less then CONSUMPTION_THRESHOLD.
 		"""
-		return path1_consumption + path2_consumption > self.CONSUMPTION_THRESHOLD
+		total_consumption = path1_consumption + path2_consumption
+		if total_consumption > self.CONSUMPTION_THRESHOLD:
+			print "Would overload path", path1_consumption, path2_consumption, self.CONSUMPTION_THRESHOLD
+			return False
+		else:
+			print "Merging is fine: ", total_consumption, self.CONSUMPTION_THRESHOLD
+			return True
+		return total_consumption > self.CONSUMPTION_THRESHOLD
 
 
 	def compute_consumption(self, path):

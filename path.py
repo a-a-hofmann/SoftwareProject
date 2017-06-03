@@ -46,8 +46,6 @@ class Path(object):
 
 
     def __eq__(self, other):
-        # if self is other:
-        #     return True
         return self.src_dpid == other.src_dpid and self.src_port == other.src_port \
         and self.dst_dpid == other.dst_dpid and self.dst_port == other.dst_port \
         and self.path == other.path
@@ -62,7 +60,6 @@ class Path(object):
 
 
     def __repr__(self):
-        # return str(self.__str__())
         return "{" + str(self.path) + ", isActive= " + str(self.is_active) + ", src_dpid=" + str(self.src_dpid) + \
         ", src_port=" + str(self.src_port) + ", dst_dpid=" + str(self.dst_dpid) + \
         ", dst_port=" + str(self.dst_port) + "}"

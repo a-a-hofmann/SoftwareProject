@@ -41,7 +41,6 @@ class PathTable(object):
     def put_path(self, path, src=None, dst=None):
         """
         Stores a new path in the lookup table.
-        Also stores the reverse direction of the path.
 
         Args:
             path: path obj to store.
@@ -56,7 +55,7 @@ class PathTable(object):
             if src != dst:
                 if path in self.paths[src][dst]:
                     if path.is_active:
-                    #print "\tHas already path:\t{}".format(path)
+                        print "\tHas already path:\t{}\tSetting active".format(path.__repr__())
                         self.set_path_active(src, dst, path)
                 else:
                     #print "\tInserting path:\t{}".format(path)
@@ -118,7 +117,7 @@ class PathTable(object):
                     success = True
                     p.is_active = is_active
 
-        s = "Succeded setting path {} ".format(path)
+        s = "Succeded setting path {} ".format(path.__repr__())
         if is_active:
             s += "active:\t{}".format(success)
         else:
