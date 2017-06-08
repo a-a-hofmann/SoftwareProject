@@ -249,7 +249,7 @@ class informationManager():
 			proportional += p
 			baseline += b
 			constant += c
-			print "2 Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
+			#print "2 Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
 			update_node_data(node.id, node.get_workload(), p, b, c) 
 
 			node.reset_port_workload()
