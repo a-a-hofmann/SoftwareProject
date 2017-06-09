@@ -49,14 +49,14 @@ def update_node_data(node_id, workload, consumption, baseline, constant):
 		 {
 			"measurement": "node consumptions",
 			"tags": {
-				"node_id": int(node_id)
+				"node_id": node_id
 				},
 			"time": get_now_timestamp(),
 			"fields": {
-				"workload": int(workload),
-				"consumption": int(consumption),
-				"baseline": int(baseline),
-				"constant": int(constant)
+				"workload": float(workload),
+				"consumption": float(consumption),
+				"baseline": float(baseline),
+				"constant": float(constant)
 				}
 		}
 
@@ -73,9 +73,9 @@ def update_total_consumption_with_policy(proportional, baseline, constant):
 				},
 			"time": get_now_timestamp(),
 			"fields": {
-				"proportional": int(proportional),
-				"baseline": int(baseline),
-				"constant": int(constant)
+				"proportional": proportional,
+				"baseline": baseline,
+				"constant": constant
 				}
 		}
 
@@ -164,9 +164,28 @@ def update_total_consumption(proportional, baseline, constant):
 				},
 			"time": get_now_timestamp(),
 			"fields": {
-				"proportional": int(proportional),
-				"baseline": int(baseline),
-				"constant": int(constant)
+				"proportional": proportional,
+				"baseline": baseline,
+				"constant": constant
+				}
+		}
+
+    	]
+	client.write_points(json_body)
+
+
+def update_total_consumption_node_subset(proportional, baseline, constant):
+	json_body = [
+		 {
+			"measurement": "network consumption node subset",
+			"tags": {
+				"tag": 1
+				},
+			"time": get_now_timestamp(),
+			"fields": {
+				"proportional": proportional,
+				"baseline": baseline,
+				"constant": constant
 				}
 		}
 

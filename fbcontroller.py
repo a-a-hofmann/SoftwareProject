@@ -86,7 +86,7 @@ class Forwarding(object):
 			src_host: source host as Host obj.
             dst_host: destination host as Host obj.
 		"""
-		print "Installing new path rules for ({}, {}):\t{}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port), new_path)
+		# print "Installing new path rules for ({}, {}):\t{}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port), new_path)
 		for index, node_dpid in enumerate(new_path):
 			msg = of.ofp_flow_mod(command=of.OFPFC_MODIFY)
 			msg.match.dl_type = ethernet.IP_TYPE
@@ -102,10 +102,19 @@ class Forwarding(object):
 				msg.match.nw_src = src_host.ipaddr
 				out_port = dst_host.port
 
-			print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
+			# print "Source node {} routing node {} to dst {} on port {}".format(src_host.dpid, node_dpid, dst_host.ipaddr, out_port)
 			msg.actions.append(of.ofp_action_output(port = out_port))
 			connection = core.openflow.getConnection(node_dpid)
-			connection.send(msg)
+
+			try:
+				connection.send(msg)
+			except Exception, e:
+				print repr(e)
+				print '-'*60
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
+			finally:
+				pass
 
 
 	def _handle_ConnectionUp (self,event):
@@ -231,9 +240,12 @@ class Forwarding(object):
 
 			if not path:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_port=src_host.port, dst_port=dst_host.port)
+				if not path:
+					print "No path found!!"
+					return
 				path.is_active = True
 
-		
+
 		pathObj = path
 		path = path.path
 
@@ -261,10 +273,18 @@ class Forwarding(object):
 			out_port = dst_host.port
 			msg.match.nw_src = src_ip
 
-		print "Sending message to node {} out port {}, for path {} between src,dst = ({}, {})".format(dpid, out_port, pathObj.__repr__(), src_host, dst_host)
+		# print "Sending message to node {} out port {}, for path {} between src,dst = ({}, {})".format(dpid, out_port, pathObj.__repr__(), src_host, dst_host)
 
 		msg.actions.append(of.ofp_action_output(port = out_port))
-		event.connection.send(msg)
+		try:
+			event.connection.send(msg)
+		except Exception, e:
+			print repr(e)
+			print '-'*60
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		finally:
+			pass
 
 
 Payload = namedtuple('Payload', 'timeSent')
@@ -284,10 +304,11 @@ class Monitoring (object):
 	def __init__ (self, G):
 
 		self.G = G
+		self.REQUEST_STATS_RATE = 5
 
 		core.openflow.addListeners(self)
 		core.listen_to_dependencies(self)
-		self.polling_timer = Timer(5, self.request_stats, recurring=True)
+		self.polling_timer = Timer(self.REQUEST_STATS_RATE, self.request_stats, recurring=True)
 		Timer(1, self.get_controller_usage, recurring=True)
 
 
@@ -297,7 +318,7 @@ class Monitoring (object):
 			self.count_flow_stats_straight += 1
 			self.count_port_stats_straight += 1
 
-		
+
 		for h in info_manager.hosts:
 			border_node = info_manager.get_node(h.dpid)
 			try:
@@ -375,7 +396,7 @@ class Monitoring (object):
 		dpid = event.connection.dpid
 		node = info_manager.get_node(dpid)
 
-		#node.reset_port_workload()
+		node.reset_port_workload()
 
 		for stat in event.stats:
 
@@ -388,7 +409,7 @@ class Monitoring (object):
 			delta_byte_count = stat.rx_bytes - self.prev_stats_ports[dpid][stat.port_no]
 			self.prev_stats_ports[dpid][stat.port_no] += delta_byte_count
 
-			mbps = self.bytes_to_mbps(delta_byte_count)
+			mbps = self.bytes_to_mbps(delta_byte_count) / float(self.REQUEST_STATS_RATE)
 
 			global main_gui
 

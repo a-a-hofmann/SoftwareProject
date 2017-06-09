@@ -39,6 +39,7 @@ class MergingPolicy(Policy):
 
 
 	def apply(self):
+		self.info_manager.is_energy_savings = True
 		all_active_paths = self.info_manager.get_active_paths()
 		for src in all_active_paths:
 			for dst in all_active_paths[src]:
@@ -49,7 +50,7 @@ class MergingPolicy(Policy):
 						print "Merged during this cycle?"
 						if merged:
 							print "Already merged paths on this cycle, will continue on the next cycle."
-							return 
+							return
 
 
 	def merge(self, paths):

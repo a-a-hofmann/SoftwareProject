@@ -21,6 +21,8 @@ class informationManager():
 
 	all_active_paths = defaultdict(lambda: defaultdict(set))
 
+	is_energy_savings = False
+
 
 	def pre_compute_paths(self, G):
 		"""
@@ -226,35 +228,29 @@ class informationManager():
 
 	def update_network_consumption(self):
 		proportional, baseline, constant = 0,0,0
+		p_subset, b_subset, c_subset = 0,0,0
 		for node in self.nodes:
-			# if node.consumption:
-			# 	node_p = 0
-			# 	node_b = 0
-			# 	node_c = 0
-			# 	for triple in node.consumption:
-			# 		p,b,c = triple
-			# 		proportional += p
-			# 		baseline += b
-			# 		constant += c
-			# 		node_p += p
-			# 		node_b += b
-			# 		node_c += c
-			# 	del node.consumption[:]
-			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node_p)
-			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node.get_consumption())
-			# 	print "1 Updating node {} data: {}, {}".format(node.id, node.get_workload(), node_p)
-			# 	update_node_data(node.id, node.get_workload(), node_p, node_b, node_c)
-			# else:
 			p, b, c = node.get_consumption(node.get_workload())
 			proportional += p
 			baseline += b
 			constant += c
-			#print "2 Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
-			update_node_data(node.id, node.get_workload(), p, b, c) 
+
+			# print "Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
+			update_node_data(node.id, node.get_workload(), p, b, c)
+			if node.id == 21 or node.id == 2 or node.id == 13 or node.id == 5 or node.id == 14 or node.id == 6 or node.id == 7:
+				p_subset += p
+				b_subset += b
+				c_subset += c
 
 			node.reset_port_workload()
 
+		# If is not energy savings then nodes do not go into sleep but stay idle consuming more energy (baseline)
+		if not self.is_energy_savings:
+			proportional = baseline
+			p_subset = b_subset
+
 		update_total_consumption(proportional, baseline, constant)
+		update_total_consumption_node_subset(p_subset, b_subset, c_subset)
 		update_total_consumption_with_policy(proportional, baseline, constant)
 
 
@@ -524,6 +520,7 @@ class informationManager():
 		DEVICE_SLEEP = 120.0
 		tOn = .11
 		LINK_CAPACITY = 1000.0
+		MAX_CONSUMPTION = 1200.0
 
 		link = defaultdict(lambda:defaultdict(lambda:None))
 		adjacency = defaultdict(lambda:defaultdict(lambda:None))
@@ -573,6 +570,7 @@ class informationManager():
 				for wl in self.port_workload.itervalues():
 					aux += self.INTERFACE * wl
 				return self.CHASSIS + aux
+
 			if w < MIN_WORKLOAD:
 				consumption = self.DEVICE_SLEEP
 			elif w <= SC_THRESHOLD:
@@ -588,10 +586,10 @@ class informationManager():
 				consumption = self.CHASSIS + PORTS
 
 			baseline = to_kw(baseline_consumption(w))
-			proportional = to_kw(consumption)
+			proportional = to_kw(consumption) if consumption <= self.MAX_CONSUMPTION else to_kw(self.MAX_CONSUMPTION)
 
-			self.consumption.append((proportional,baseline, 1200))
-			return to_kw(consumption),baseline, 1200
+			self.consumption.append((proportional,baseline, self.MAX_CONSUMPTION))
+			return proportional, baseline, to_kw(self.MAX_CONSUMPTION)
 
 
 		def get_node_out_port(self, dpid, dst_dpid):

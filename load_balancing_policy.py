@@ -40,6 +40,7 @@ class LoadBalancingPolicy(Policy):
 
 
 	def apply(self):
+		self.info_manager.is_energy_savings = False
 		path_host_map = self.info_manager.get_active_path_hosts_dict()
 		for path in path_host_map:
 			host_list = path_host_map[path]
