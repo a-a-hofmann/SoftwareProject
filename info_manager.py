@@ -22,6 +22,7 @@ class informationManager():
 	all_active_paths = defaultdict(lambda: defaultdict(set))
 
 	is_energy_savings = False
+	previous_mode = is_energy_savings
 
 
 	def pre_compute_paths(self, G):
@@ -227,17 +228,18 @@ class informationManager():
 
 
 	def update_network_consumption(self):
-		proportional, baseline, constant = 0,0,0
+		proportional, proportional_always_on, baseline, constant = 0, 0, 0, 0
 		p_subset, b_subset, c_subset = 0,0,0
 		for node in self.nodes:
 			p, b, c = node.get_consumption(node.get_workload())
 			proportional += p
+			proportional_always_on += p
 			baseline += b
 			constant += c
 
-			# print "Updating node {} data: {}, {}".format(node.id, node.get_workload(), p)
 			update_node_data(node.id, node.get_workload(), p, b, c)
-			if node.id == 21 or node.id == 2 or node.id == 13 or node.id == 5 or node.id == 14 or node.id == 6 or node.id == 7:
+			# if node.id == 21 or node.id == 2 or node.id == 13 or node.id == 5 or node.id == 14 or node.id == 6 or node.id == 7:
+			if self.is_node_subset(node.id):
 				p_subset += p
 				b_subset += b
 				c_subset += c
@@ -249,9 +251,14 @@ class informationManager():
 			proportional = baseline
 			p_subset = b_subset
 
-		update_total_consumption(proportional, baseline, constant)
+		# update_total_consumption(proportional, baseline, constant)
 		update_total_consumption_node_subset(p_subset, b_subset, c_subset)
-		update_total_consumption_with_policy(proportional, baseline, constant)
+		update_total_consumption_with_policy(proportional, proportional_always_on, baseline, constant, self.is_energy_savings != self.previous_mode)
+		self.previous_mode = self.is_energy_savings
+
+
+	def is_node_subset(self, node_id):
+		return node_id == 21 or node_id == 2 or node_id == 13 or node_id == 5 or node_id == 14 or node_id == 6 or node_id == 7
 
 
 	def get_host_consumption(self, host, host_wl):
@@ -521,6 +528,7 @@ class informationManager():
 		tOn = .11
 		LINK_CAPACITY = 1000.0
 		MAX_CONSUMPTION = 1200.0
+		MAX_CONSUMPTION_KWH = 1.20
 
 		link = defaultdict(lambda:defaultdict(lambda:None))
 		adjacency = defaultdict(lambda:defaultdict(lambda:None))
@@ -585,11 +593,12 @@ class informationManager():
 						PORTS += self.INTERFACE * wl
 				consumption = self.CHASSIS + PORTS
 
-			baseline = to_kw(baseline_consumption(w))
-			proportional = to_kw(consumption) if consumption <= self.MAX_CONSUMPTION else to_kw(self.MAX_CONSUMPTION)
+			baseline = baseline_consumption(w)
+			baseline = to_kw(baseline) if baseline <= self.MAX_CONSUMPTION else self.MAX_CONSUMPTION_KWH
+			proportional = to_kw(consumption) if consumption <= self.MAX_CONSUMPTION else self.MAX_CONSUMPTION_KWH
 
 			self.consumption.append((proportional,baseline, self.MAX_CONSUMPTION))
-			return proportional, baseline, to_kw(self.MAX_CONSUMPTION)
+			return proportional, baseline, self.MAX_CONSUMPTION_KWH
 
 
 		def get_node_out_port(self, dpid, dst_dpid):

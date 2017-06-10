@@ -1,3 +1,4 @@
+from datetime import datetime
 
 class Clock:
     """
@@ -130,6 +131,12 @@ class Clock:
             self.hours = hours
         else:
             raise ValueError("Hours not in range or null: {}".format(hours))
+
+
+    def get_now_timestamp(self):
+        now = datetime.now()
+        now = now.replace(hour=self.hours, minute=self.minutes, second=self.seconds)
+        return now.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
     def __str__(self):

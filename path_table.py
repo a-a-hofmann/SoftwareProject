@@ -55,7 +55,7 @@ class PathTable(object):
             if src != dst:
                 if path in self.paths[src][dst]:
                     if path.is_active:
-                        print "\tHas already path:\t{}\tSetting active".format(path.__repr__())
+                        # print "\tHas already path:\t{}\tSetting active".format(path.__repr__())
                         self.set_path_active(src, dst, path)
                 else:
                     #print "\tInserting path:\t{}".format(path)
@@ -123,7 +123,7 @@ class PathTable(object):
         else:
             s += "inactive:\t{}".format(success)
 
-        print s
+        # print s
 
 
     def __str__(self):

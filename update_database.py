@@ -2,6 +2,8 @@ from collections import defaultdict
 from datetime import datetime
 
 from influxdb import InfluxDBClient
+#from fbcontroller import *
+import fbcontroller
 
 
 # InfluxDB connections settings
@@ -18,12 +20,12 @@ client.drop_database(dbname)
 client.create_database(dbname)
 
 
-
 def get_now_timestamp():
 	"""
 		Gets a timestamp using a format influxdb likes.
 	"""
 	return datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+	# return fbcontroller.clockObj.get_now_timestamp()
 
 
 
@@ -64,7 +66,7 @@ def update_node_data(node_id, workload, consumption, baseline, constant):
 	client.write_points(json_body)
 
 #update the consume table with src and dst mac adresse and
-def update_total_consumption_with_policy(proportional, baseline, constant):
+def update_total_consumption_with_policy(proportional, always_on_energy_efficiency, baseline, constant, policy_change):
 	json_body = [
 		 {
 			"measurement": "network consumption with policy",
@@ -74,8 +76,10 @@ def update_total_consumption_with_policy(proportional, baseline, constant):
 			"time": get_now_timestamp(),
 			"fields": {
 				"proportional": proportional,
+				"always_on_energy_efficiency": always_on_energy_efficiency,
 				"baseline": baseline,
-				"constant": constant
+				"constant": constant,
+				"policy_change": policy_change
 				}
 		}
 
@@ -164,9 +168,9 @@ def update_total_consumption(proportional, baseline, constant):
 				},
 			"time": get_now_timestamp(),
 			"fields": {
-				"proportional": proportional,
-				"baseline": baseline,
-				"constant": constant
+				"proportional": float(proportional),
+				"baseline": float(baseline),
+				"constant": float(constant)
 				}
 		}
 

@@ -35,6 +35,7 @@ main_gui = None
 PATH_REFRESH_RATE = 1
 CLOCK_TICK_RATE = 1
 PATH_LIMIT = 10
+clockObj = Clock(19, 0, 0)
 
 class Forwarding(object):
 	"""
@@ -45,6 +46,7 @@ class Forwarding(object):
 		# Network Graph
 		self.G = G
 		self.clock = Clock(19, 0, 0)
+		self.clock = clockObj
 
 		"Create policies and add them to the policy_manager."
 		mergingPolicy = MergingPolicy(self, info_manager)
@@ -69,10 +71,10 @@ class Forwarding(object):
 		Iterates over all hosts and all active paths and applies policies.
 		"""
 
-		print "\nIterating over hosts and applying policies"
+		# print "\nIterating over hosts and applying policies"
 
 		self.policy_manager.print_time()
-		info_manager.print_active_paths()
+		# info_manager.print_active_paths()
 		self.policy_manager.apply_active_policies()
 
 		print "---------------\n"
@@ -109,10 +111,11 @@ class Forwarding(object):
 			try:
 				connection.send(msg)
 			except Exception, e:
-				print repr(e)
-				print '-'*60
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
+				# print repr(e)
+				# print '-'*60
+				# traceback.print_exc(file=sys.stdout)
+				# print '-'*60
+				pass
 			finally:
 				pass
 
@@ -234,14 +237,13 @@ class Forwarding(object):
 		else:
 			paths = src_host.path_list
 			path = None
-			for path_it in paths:
-				if path_it.is_active and path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
-					path = path_it
+			# for path_it in paths:
+			# 	if path_it.is_active and path_it.src_dpid == src_host.dpid and path_it.src_port == src_host.port and path_it.dst_dpid == dst_host.dpid and path_it.dst_port == dst_host.port:
+			# 		path = path_it
 
 			if not path:
 				path = src_host.get_path(src_host.dpid, dst_host.dpid, src_port=src_host.port, dst_port=dst_host.port)
 				if not path:
-					print "No path found!!"
 					return
 				path.is_active = True
 

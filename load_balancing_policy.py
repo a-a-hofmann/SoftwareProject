@@ -49,9 +49,9 @@ class LoadBalancingPolicy(Policy):
 
 
 	def check_if_should_split(self, path, host_pairs):
-		print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
+		# print "Check if should split ({}, {}):\t{}".format(path[0], path[-1], path)
 		overloaded_nodes = self.check_nodes_in_path_for_loadbalancing(path=path)
-		print "Overloaded nodes {}".format(overloaded_nodes)
+		# print "Overloaded nodes {}".format(overloaded_nodes)
 		if overloaded_nodes or True:
 			"Split list of hosts into two, one half will use a new path."
 			new_path = self.get_path_for_load_balancing(path[0], path[-1], path, overloaded_nodes)
@@ -60,7 +60,7 @@ class LoadBalancingPolicy(Policy):
 				n_hosts = len(host_pairs)
 				second_half_hosts = host_pairs[n_hosts/2:]
 
-				print "Splitting traffic from {} to {}".format(path, new_path)
+				# print "Splitting traffic from {} to {}".format(path, new_path)
 				for src, dst in second_half_hosts:
 					self.controller.modify_path_rules(new_path, src, dst)
 
@@ -88,9 +88,9 @@ class LoadBalancingPolicy(Policy):
 		 	candidate: new path or None if no path was found.
 		"""
 		all_paths = self.info_manager.all_paths(self.controller.G, src_dpid=src, dst_dpid=dst)
-		print "Current path:\t{}".format(current_path)
+		# print "Current path:\t{}".format(current_path)
 		all_paths.remove(list(current_path))
-		print "All paths:\t{}".format(all_paths)
+		# print "All paths:\t{}".format(all_paths)
 
 		current_path_consumption = sum(self.info_manager.compute_path_information(current_path)[0].itervalues()) #self.compute_consumption(current_path)
 
@@ -104,7 +104,8 @@ class LoadBalancingPolicy(Policy):
 				if current_path_consumption + candidate_path_consumption < self._CONSUMPTION_THRESHOLD:
 					candidates.append(candidate)
 				else:
-					print "Would overload: ", current_path_consumption, candidate_path_consumption, self._CONSUMPTION_THRESHOLD
+					# print "Would overload: ", current_path_consumption, candidate_path_consumption, self._CONSUMPTION_THRESHOLD
+					pass
 
 		return candidates[0] if candidates else None
 

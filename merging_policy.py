@@ -68,13 +68,13 @@ class MergingPolicy(Policy):
 		paths = [path for path in paths if path.path != new_path.path]
 		paths = paths[:self._PATH_MERGING_THRESHOLD]
 
-		print "Paths considered for merging:"
-		for path in paths:
-			print "\t{}".format(path.path)
+		# print "Paths considered for merging:"
+		# for path in paths:
+		# 	print "\t{}".format(path.path)
 
 
 		merged = False
-		print "Merging traffic into one path:\t{}".format(new_path)
+		# print "Merging traffic into one path:\t{}".format(new_path)
 		for path in paths:
 			if path != new_path and path.path != new_path.path:
 				path_consumption = self.compute_consumption(path)
@@ -84,19 +84,20 @@ class MergingPolicy(Policy):
 					"Extract src and dst info from all paths"
 					src_host, dst_host = self.info_manager.get_hosts_from_path(path)
 					path.is_active = False
-					print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
+					# print "Modifying rules for ({}, {}):\told path={}\tnew path={}".format(src_host, dst_host, path, new_path)
 					self.controller.modify_path_rules(new_path.path, src_host, dst_host)
 					merged = True
 
 					src_host.clear_paths()
-				 	print "Adding new path {} to host {}".format(new_path, src_host)
+				 	# print "Adding new path {} to host {}".format(new_path, src_host)
 					addedPath = src_host.create_path(src_host, dst_host, new_path.path, is_active = True)
 					self.info_manager.put_path(addedPath)
 
 				else:
-					print "Would overload path", path_consumption, new_path.total_consumption, self.CONSUMPTION_THRESHOLD
+					# print "Would overload path", path_consumption, new_path.total_consumption, self.CONSUMPTION_THRESHOLD
+					pass
 
-		print "\n------------------------------\n"
+		# print "\n------------------------------\n"
 		return merged
 
 
@@ -121,10 +122,10 @@ class MergingPolicy(Policy):
 		"""
 		total_consumption = path1_consumption + path2_consumption
 		if total_consumption > self.CONSUMPTION_THRESHOLD:
-			print "Would overload path", path1_consumption, path2_consumption, self.CONSUMPTION_THRESHOLD
+			# print "Would overload path", path1_consumption, path2_consumption, self.CONSUMPTION_THRESHOLD
 			return False
 		else:
-			print "Merging is fine: ", total_consumption, self.CONSUMPTION_THRESHOLD
+			# print "Merging is fine: ", total_consumption, self.CONSUMPTION_THRESHOLD
 			return True
 		return total_consumption > self.CONSUMPTION_THRESHOLD
 
