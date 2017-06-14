@@ -281,6 +281,7 @@ class Forwarding(object):
 		try:
 			event.connection.send(msg)
 		except Exception, e:
+			print repr(msg), str(msg)
 			print repr(e)
 			print '-'*60
 			traceback.print_exc(file=sys.stdout)

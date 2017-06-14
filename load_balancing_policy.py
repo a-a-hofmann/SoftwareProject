@@ -89,7 +89,8 @@ class LoadBalancingPolicy(Policy):
 		"""
 		all_paths = self.info_manager.all_paths(self.controller.G, src_dpid=src, dst_dpid=dst)
 		# print "Current path:\t{}".format(current_path)
-		all_paths.remove(list(current_path))
+		if current_path in all_paths:
+			all_paths.remove(list(current_path))
 		# print "All paths:\t{}".format(all_paths)
 
 		current_path_consumption = sum(self.info_manager.compute_path_information(current_path)[0].itervalues()) #self.compute_consumption(current_path)
