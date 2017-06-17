@@ -94,6 +94,8 @@ class Forwarding(object):
 			msg.match.dl_type = ethernet.IP_TYPE
 			msg.match.nw_dst = dst_host.ipaddr
 			msg.match.nw_src = src_host.ipaddr
+			msg.idle_timeout = of.OFP_FLOW_PERMANENT
+			msg.hard_timeout = of.OFP_FLOW_PERMANENT
 
 			if index + 1 < len(new_path):
 				"intermediate node in the path"
@@ -183,6 +185,8 @@ class Forwarding(object):
 		msg = of.ofp_flow_mod(command=of.OFPFC_ADD)
 		msg.data = event.ofp
 		msg.match.dl_type = ethernet.IP_TYPE
+		msg.idle_timeout = of.OFP_FLOW_PERMANENT
+		msg.hard_timeout = of.OFP_FLOW_PERMANENT
 
 		#print "\tsrc_host {}\tdst_host {}".format(str(src_host.ipaddr) + ':' + str(src_host.port), str(dst_host.ipaddr) + ':' + str(dst_host.port))
 
@@ -391,6 +395,8 @@ class Monitoring (object):
 		msg = of.ofp_packet_out()
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
 		msg.data = packet.pack()
+		msg.idle_timeout = of.OFP_FLOW_PERMANENT
+		msg.hard_timeout = of.OFP_FLOW_PERMANENT
 		core.openflow.getConnection(src_host.dpid).send(msg)
 
 

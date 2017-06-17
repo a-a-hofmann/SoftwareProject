@@ -16,8 +16,8 @@ dbname = 'mydb'
 client = InfluxDBClient(host, port, user, password, dbname)
 
 #clear database at starting
-# client.drop_database(dbname)
-# client.create_database(dbname)
+client.drop_database(dbname)
+client.create_database(dbname)
 
 
 def get_now_timestamp():
